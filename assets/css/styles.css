@@ -1,0 +1,263 @@
+:root {
+  --color-dark: #041f0f;
+  --color-dark-contrast: #fcf9f3;
+  --color-light: #ffffff;
+  --color-muted: rgba(252, 249, 243, 0.75);
+  --color-accent: #d4a455;
+  --max-width: 1100px;
+  --spacing-xl: 6rem;
+  --spacing-lg: 4rem;
+  --spacing-md: 2rem;
+  --spacing-sm: 1rem;
+  --transition-base: 200ms ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--color-dark);
+  color: var(--color-dark-contrast);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.container {
+  width: min(100%, var(--max-width));
+  margin: 0 auto;
+  padding: 0 var(--spacing-sm);
+}
+
+.section {
+  padding: var(--spacing-xl) 0;
+}
+
+.section--dark {
+  background-color: var(--color-dark);
+  color: var(--color-dark-contrast);
+}
+
+.section--light {
+  background-color: var(--color-light);
+  color: #0e2514;
+}
+
+.section--contacts {
+  padding-bottom: calc(var(--spacing-xl) * 0.75);
+}
+
+.eyebrow {
+  margin: 0 0 var(--spacing-lg);
+  font-size: 1.25rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.eyebrow--dark {
+  color: #1c3120;
+}
+
+.two-columns {
+  display: grid;
+  gap: var(--spacing-lg);
+  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.media__image {
+  width: min(320px, 100%);
+  margin: 0 auto;
+}
+
+.copy p {
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.05rem;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  background-color: #0d301a;
+  background-image: url('../images/hero-background.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: var(--color-dark-contrast);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      90deg,
+      rgba(4, 31, 15, 0.9) 15%,
+      rgba(4, 31, 15, 0.5) 60%,
+      rgba(4, 31, 15, 0.2)
+    );
+}
+
+.hero__overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.hero__crest img {
+  width: min(260px, 40vw);
+}
+
+.hero__content {
+  text-align: left;
+}
+
+.hero__content h1 {
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  margin: 0 0 var(--spacing-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hero__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.offer-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.offer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background-color: rgba(12, 34, 19, 0.04);
+  padding-bottom: var(--spacing-sm);
+}
+
+.offer h2 {
+  margin: var(--spacing-sm) 0 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.offer p {
+  font-size: 1rem;
+  color: #2a2a2a;
+}
+
+.offer__image img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.section--dark .offer p {
+  color: var(--color-muted);
+}
+
+.section--dark .offer {
+  background: transparent;
+}
+
+.section--dark .offer h2 {
+  color: var(--color-dark-contrast);
+}
+
+.contact-list {
+  display: grid;
+  gap: var(--spacing-md);
+  align-items: center;
+  justify-items: start;
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--color-dark-contrast);
+  transition: transform var(--transition-base);
+  width: fit-content;
+  justify-self: start;
+}
+
+.contact img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.contact:hover,
+.contact:focus {
+  transform: translateX(6px);
+}
+
+.footer {
+  background-color: #020f08;
+  color: rgba(255, 255, 255, 0.7);
+  padding: var(--spacing-sm) 0 var(--spacing-md);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 780px) {
+  .hero {
+    min-height: 90vh;
+  }
+
+  .hero__overlay {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero__content {
+    text-align: center;
+  }
+
+  .contact-list {
+    gap: var(--spacing-sm);
+    justify-items: center;
+  }
+
+  .contact {
+    justify-items: center;
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-self: center;
+    width: 100%;
+  }
+}
