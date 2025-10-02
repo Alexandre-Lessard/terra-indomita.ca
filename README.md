@@ -4,7 +4,7 @@ A single-page website for Terra Indomita, an outdoor education school. The layou
 
 ## Page Sections
 - Hero banner with crest, key service list, and forest background.
-- "Qui somme nous" presentation with crest and mission statement.
+- "Qui sommes-nous" presentation with crest and mission statement.
 - Service trio detailing training camps, immersive camps, and private mentoring.
 - Founder spotlight with bio and portrait.
 - Contact block linking to social platforms and email.
