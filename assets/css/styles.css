@@ -1,5 +1,5 @@
 :root {
-  --color-dark: #041f0f;
+  --color-dark: #142012;
   --color-dark-contrast: #fcf9f3;
   --color-light: #ffffff;
   --color-muted: rgba(252, 249, 243, 0.75);
@@ -128,7 +128,7 @@ img {
 }
 
 .hero__crest img {
-  width: min(260px, 40vw);
+  width: min(520px, 80vw);
 }
 
 .hero__content {
@@ -163,7 +163,7 @@ img {
   flex-direction: column;
   gap: var(--spacing-sm);
   background-color: rgba(12, 34, 19, 0.04);
-  padding-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
 }
 
 .offer h2 {
