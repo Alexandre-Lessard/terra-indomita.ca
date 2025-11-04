@@ -1,0 +1,5 @@
+cms/node_modules/
+cms/database/*.db
+cms/uploads/
+cms/extensions/
+cms/.env

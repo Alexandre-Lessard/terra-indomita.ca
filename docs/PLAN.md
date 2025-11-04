@@ -128,15 +128,18 @@ I’m building a fast public landing site with an events section that automatica
 
 2. **Infrastructure**
 
-   * Set up Cloudflare Pages (connected to the GitHub repo).
-   * Configure DNS for production and a **temporary staging subdomain** (e.g., `test.brand.tld`).
-   * Create Cloudflare Tunnel routes for `api.brand.tld` and `admin.brand.tld`.
+   * Set up Cloudflare Pages (connected to the GitHub repo). [Done]
+   * Configure DNS for production and a **temporary staging subdomain** (e.g., `test.terra-indomita.ca`). [Done]
+   * Create Cloudflare Tunnel routes for `api.terra-indomita.ca` and `admin.terra-indomita.ca`. [Done]
+
+   Status: Completed
 
 3. **CMS**
 
    * Install on my server; create `events` collection with the agreed fields.
    * Add a **Global Settings** collection (includes “Show Current Events”).
    * Create the limited client role and user; document the workflow.
+      Database File Path: (/home/prod/terra-indomita.ca/cms/data.db)
 
 4. **API**
 
