@@ -121,8 +121,10 @@ I’m building a fast public landing site with an events section that automatica
 
 1. **Initiation**
 
-   * Confirm domain(s), branding, events field schema.
-   * Define the global **“Show Current Events”** setting behavior.
+   * Confirm domain(s), branding, events field schema. [Done]
+   * Define the global **“Show Current Events”** setting behavior. [Done]
+
+   Status: Completed — domains, branding, events schema, and toggle documented.
 
 2. **Infrastructure**
 

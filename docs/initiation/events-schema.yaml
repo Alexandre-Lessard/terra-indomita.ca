@@ -1,0 +1,123 @@
+title: Terra Indomita Events Schema
+version: 1.0.0
+entity: event
+description: Canonical fields for events in the CMS and the public API.
+timezone: America/Toronto
+
+fields:
+  - key: id
+    type: string
+    required: true
+    generated: uuid
+    description: Internal unique identifier (not shown on frontend)
+
+  - key: title
+    type: string
+    required: true
+    maxLength: 140
+    description: Human-readable event name
+
+  - key: slug
+    type: string
+    required: false
+    unique: true
+    pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    description: URL-safe identifier (optional now; future-friendly)
+
+  - key: start
+    type: datetime
+    required: true
+    format: RFC3339
+    example: '2025-03-21T09:00:00-04:00'
+    description: Event start timestamp (store with timezone offset)
+
+  - key: end
+    type: datetime
+    required: false
+    format: RFC3339
+    example: '2025-03-21T17:00:00-04:00'
+    description: Event end timestamp; omit for one-shot events
+
+  - key: location
+    type: string
+    required: false
+    maxLength: 140
+    description: Freeform location (city / region / link)
+
+  - key: description
+    type: richtext
+    required: false
+    format: markdown
+    description: Short description or details (Markdown supported)
+
+  - key: featured_image
+    type: asset
+    required: false
+    mimeTypes:
+      - image/jpeg
+      - image/png
+      - image/webp
+    description: Image used for cards/hero
+
+sorting:
+  default: start
+  upcoming_order: asc
+  past_order: desc
+
+grouping_logic:
+  upcoming: 'start > now'
+  current: 'start <= now <= end OR (end missing AND start == now)'
+  past: 'end < now OR (end missing AND start < now)'
+  toggle:
+    key: showCurrentEvents
+    default: true
+    effect: 'when false, hide the "Current" group entirely (frontend groups only into Upcoming/Past)'
+
+validation:
+  - name: end_must_follow_start
+    message: 'end must be greater than or equal to start'
+    expression: 'end == null || end >= start'
+
+indexes:
+  - name: idx_start
+    fields: [start]
+  - name: idx_visibility
+    fields: [start, end]
+
+api:
+  read:
+    path: /events
+    method: GET
+    response:
+      contentType: application/json
+      shape:
+        meta:
+          showCurrentEvents: boolean
+          generatedAt: datetime   # RFC3339
+          timezone: string        # e.g., 'America/Toronto'
+        events: array             # of event objects (fields above)
+  health:
+    path: /health
+    method: GET
+    response:
+      status: 200
+      body: ok
+
+examples:
+  - title: 'Stage de formation'
+    slug: 'stage-formation-mars'
+    start: '2025-03-21T09:00:00-04:00'
+    end: '2025-03-21T17:00:00-04:00'
+    location: 'Estrie, QC'
+    description: >
+      Introduction aux bases du bivouac et de l’autonomie en plein air.
+    featured_image: './assets/images/offre-stage-formation.jpg'
+
+  - title: 'Camp immersif'
+    slug: 'camp-immersif-ete'
+    start: '2025-07-12T10:00:00-04:00'
+    end: '2025-07-14T16:00:00-04:00'
+    location: 'Mauricie, QC'
+    description: >
+      Construction d’abris, bivouac, cuisine en pleine nature.
+    featured_image: null
