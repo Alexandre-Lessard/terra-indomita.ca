@@ -21,6 +21,13 @@
 - Taglines / key phrases: (capture from client brief or mockups)
 
 ## Outstanding Items
-- [ ] Final logo export (SVG + PNG)
-- [ ] Confirm hero photography license/source
-- [ ] Verify Nunito usage rights for self-hosting (if needed)
+- [X] Final logo export (SVG + PNG)
+- [X] Confirm hero photography license/source
+- [X] Verify Nunito usage rights for self-hosting
+
+Fonts (Nunito)
+  Source: Google Fonts (family “Nunito”, weights 300, 400, 600, 700).
+  License: SIL Open Font License 1.1 (OFL).
+  Allowed: self‑hosting, embedding, commercial use, redistribution.
+  Obligations: include OFL license text with the font files; don’t sell the font by itself; if modifying, comply with any Reserved Font Name clause in the included OFL.txt.
+  Decision: Keep Google Fonts during build-out; optionally self‑host before launch for privacy/perf.
