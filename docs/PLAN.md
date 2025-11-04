@@ -152,7 +152,9 @@ I’m building a fast public landing site with an events section that automatica
 
 5. **Frontend**
 
-   * Build landing + events pages; apply simple, accessible brand styling.
+   * Build the landing page and calendar-based events experience with accessible brand styling.
+   * Implement month navigation (previous/next), default to the current month, and highlight today.
+   * Color days that have events; clicking a day opens an overlay with event details.
    * Implement client-side grouping logic; respect the **“Show Current Events”** toggle.
    * Add **graceful fallback UI** if the API is unavailable.
 
