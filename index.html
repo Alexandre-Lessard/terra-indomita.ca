@@ -149,42 +149,92 @@
           </div>
         </div>
 
-        </section>
+      </section>
 
-            <section class="section section--light section--events" id="evenements">
+      <section class="section section--light section--events" id="evenements">
         <div class="container">
           <p class="eyebrow eyebrow--dark">Événements</p>
           <p class="section__intro">
-            Découvrez nos rendez-vous à venir et suivez l’actualité de Terra Indomita.
+            Découvrez nos rendez-vous à venir et naviguez le calendrier pour explorer les activités de Terra Indomita.
           </p>
 
-          <div id="events-status" class="events-status">Chargement des événements…</div>
+          <div id="events-status" class="events-status" role="status">
+            Chargement des événements…
+          </div>
 
-          <div id="events-groups" class="events-groups" hidden>
-            <div class="event-group" data-group="upcoming">
-              <h2 class="event-group__title">À venir</h2>
-              <div class="event-group__list" role="list"></div>
+          <div id="events-calendar" class="calendar" hidden data-calendar>
+            <div class="calendar__header">
+              <button
+                type="button"
+                class="calendar__nav calendar__nav--prev"
+                aria-label="Mois précédent"
+              >
+                ‹
+              </button>
+
+              <h2 id="calendar-month" class="calendar__month" aria-live="polite"></h2>
+
+              <button
+                type="button"
+                class="calendar__nav calendar__nav--next"
+                aria-label="Mois suivant"
+              >
+                ›
+              </button>
             </div>
 
-            <div class="event-group" data-group="current" hidden>
-              <h2 class="event-group__title">En cours</h2>
-              <div class="event-group__list" role="list"></div>
+            <div class="calendar__weekdays" aria-hidden="true">
+              <span>Lun</span>
+              <span>Mar</span>
+              <span>Mer</span>
+              <span>Jeu</span>
+              <span>Ven</span>
+              <span>Sam</span>
+              <span>Dim</span>
             </div>
 
-            <div class="event-group" data-group="past">
-              <h2 class="event-group__title">Passés</h2>
-              <div class="event-group__list" role="list"></div>
-            </div>
+            <div
+              id="calendar-grid"
+              class="calendar__grid"
+              role="grid"
+              aria-labelledby="calendar-month"
+            ></div>
           </div>
         </div>
       </section>
 
-      <template id="event-card-template">
-        <article class="event-card" role="listitem">
-          <h3 class="event-card__title"></h3>
-          <p class="event-card__datetime"></p>
-          <p class="event-card__location" hidden></p>
-          <p class="event-card__description" hidden></p>
+      <div id="event-modal" class="event-modal" hidden aria-hidden="true">
+        <div class="event-modal__backdrop" data-modal-dismiss></div>
+        <div
+          class="event-modal__dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="event-modal-title"
+          tabindex="-1"
+        >
+          <button
+            type="button"
+            class="event-modal__close"
+            data-modal-dismiss
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+          <h3 id="event-modal-title" class="event-modal__title"></h3>
+          <div id="event-modal-content" class="event-modal__content"></div>
+          <p id="event-modal-empty" class="event-modal__empty" hidden>
+            Aucun événement n’est prévu pour cette date.
+          </p>
+        </div>
+      </div>
+
+      <template id="event-detail-template">
+        <article class="event-detail">
+          <img class="event-detail__image" alt="" hidden />
+          <h4 class="event-detail__title"></h4>
+          <p class="event-detail__datetime"></p>
+          <p class="event-detail__location" hidden></p>
+          <p class="event-detail__description" hidden></p>
         </article>
       </template>
 
@@ -225,179 +275,399 @@
     </footer>
 
     <script>
-      const yearNode = document.getElementById('current-year');
-      if (yearNode) {
-        yearNode.textContent = new Date().getFullYear();
-      }
+      (function () {
+        const ASSET_BASE_URL = 'https://api.terra-indomita.ca/assets/';
 
-      document.querySelectorAll('img').forEach((image) => {
-        image.addEventListener('error', () => {
-          console.warn('Image introuvable:', image.getAttribute('src'));
+        const yearNode = document.getElementById('current-year');
+        if (yearNode) {
+          yearNode.textContent = new Date().getFullYear();
+        }
+
+        document.querySelectorAll('img').forEach((image) => {
+          image.addEventListener('error', () => {
+            console.warn('Image introuvable:', image.getAttribute('src'));
+          });
         });
-      });
 
-      async function loadEvents() {
         const statusNode = document.getElementById('events-status');
-        const groupsNode = document.getElementById('events-groups');
-        const template = document.getElementById('event-card-template');
+        const calendarNode = document.getElementById('events-calendar');
+        const gridNode = document.getElementById('calendar-grid');
+        const monthNode = document.getElementById('calendar-month');
+        const prevBtn = calendarNode?.querySelector('.calendar__nav--prev');
+        const nextBtn = calendarNode?.querySelector('.calendar__nav--next');
 
-        if (!statusNode || !groupsNode || !template) return;
+        const modalNode = document.getElementById('event-modal');
+        const modalDialog = modalNode?.querySelector('.event-modal__dialog');
+        const modalContent = document.getElementById('event-modal-content');
+        const modalTitle = document.getElementById('event-modal-title');
+        const modalEmpty = document.getElementById('event-modal-empty');
+        const modalDismissEls = modalNode?.querySelectorAll('[data-modal-dismiss]');
+        const detailTemplate = document.getElementById('event-detail-template');
+
+        if (
+          !statusNode ||
+          !calendarNode ||
+          !gridNode ||
+          !monthNode ||
+          !modalNode ||
+          !modalDialog ||
+          !modalContent ||
+          !modalTitle ||
+          !modalDismissEls ||
+          !detailTemplate
+        ) {
+          return;
+        }
 
         const EVENTS_URL =
-          'https://api.terra-indomita.ca/items/events?sort=start&fields=title,start,end,location,description';
+          'https://api.terra-indomita.ca/items/events?sort=start&fields=title,start,end,location,description,featured_image';
         const SETTINGS_URL = 'https://api.terra-indomita.ca/items/global_settings';
 
-        try {
-          const [eventsRes, settingsRes] = await Promise.all([
-            fetch(EVENTS_URL, { headers: { Accept: 'application/json' } }),
-            fetch(SETTINGS_URL, { headers: { Accept: 'application/json' } }),
-          ]);
+        const today = new Date();
+        const todayKey = formatDateKey(today);
+        let previousFocus = null;
 
-          if (!eventsRes.ok || !settingsRes.ok) {
-            throw new Error(`Bad response: ${eventsRes.status}/${settingsRes.status}`);
+        const state = {
+          events: [],
+          showCurrentEvents: true,
+          monthCursor: new Date(today.getFullYear(), today.getMonth(), 1),
+          eventsByDay: new Map(),
+        };
+
+        function formatDateKey(date) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        }
+
+        function truncateToLocalDay(date) {
+          return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        }
+
+        function computeStatus(event) {
+          const now = new Date();
+          const start = event.start ? new Date(event.start) : null;
+          const end = event.end ? new Date(event.end) : null;
+
+          if (!start) return 'past';
+          if (start > now) return 'upcoming';
+
+          const sameDay = start.toDateString() === now.toDateString();
+          const stillRunning = end ? now <= end : sameDay;
+
+          if (stillRunning && state.showCurrentEvents) {
+            return 'current';
           }
 
-          const eventsPayload = await eventsRes.json();
-          const settingsPayload = await settingsRes.json();
+          return 'past';
+        }
 
-          const events = eventsPayload?.data ?? [];
-          const showCurrent =
-            (Array.isArray(settingsPayload?.data)
-              ? settingsPayload.data[0]?.showCurrentEvents
-              : settingsPayload?.data?.showCurrentEvents) ?? true;
+        function hydrateEventsByDay() {
+          state.eventsByDay.clear();
 
-          const now = new Date();
-          const groups = { upcoming: [], current: [], past: [] };
-
-          events.forEach((event) => {
+          state.events.forEach((event) => {
             const start = event.start ? new Date(event.start) : null;
+            if (!start) return;
+
             const end = event.end ? new Date(event.end) : null;
+            const startDay = truncateToLocalDay(start);
+            const endDay = truncateToLocalDay(end || start);
 
-            if (!start) {
-              groups.past.push(event);
-              return;
+            for (let cursor = new Date(startDay); cursor <= endDay; cursor.setDate(cursor.getDate() + 1)) {
+              const key = formatDateKey(cursor);
+              const existing = state.eventsByDay.get(key) || [];
+              existing.push(event);
+              state.eventsByDay.set(key, existing);
             }
-
-            if (start > now) {
-              groups.upcoming.push(event);
-              return;
-            }
-
-            if (!showCurrent) {
-              groups.past.push(event);
-              return;
-            }
-
-            if (end && now <= end) {
-              groups.current.push(event);
-              return;
-            }
-
-            if (!end && start.toDateString() === now.toDateString()) {
-              groups.current.push(event);
-              return;
-            }
-
-            groups.past.push(event);
           });
+        }
+
+        function getDayStatus(eventsForDay) {
+          let hasUpcoming = false;
+          let hasCurrent = false;
+
+          eventsForDay.forEach((event) => {
+            const status = computeStatus(event);
+            if (status === 'upcoming') hasUpcoming = true;
+            if (status === 'current') hasCurrent = true;
+          });
+
+          if (hasUpcoming) return 'upcoming';
+          if (hasCurrent) return 'current';
+          return 'past';
+        }
+
+        function showLoadingSkeleton() {
+          calendarNode.hidden = false;
+          calendarNode.classList.add('calendar--loading');
+          gridNode.classList.add('calendar__grid--loading');
+          gridNode.innerHTML = '';
+          const placeholderCount = 42;
+          for (let i = 0; i < placeholderCount; i += 1) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'calendar__cell calendar__cell--placeholder';
+            gridNode.appendChild(placeholder);
+          }
+        }
+
+        function renderCalendar() {
+          calendarNode.classList.remove('calendar--loading');
+          gridNode.classList.remove('calendar__grid--loading');
+          gridNode.innerHTML = '';
+
+          const year = state.monthCursor.getFullYear();
+          const month = state.monthCursor.getMonth();
+          const firstDay = new Date(year, month, 1);
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const startOffset = (firstDay.getDay() + 6) % 7;
+
+          monthNode.textContent = new Intl.DateTimeFormat('fr-CA', {
+            month: 'long',
+            year: 'numeric',
+          }).format(state.monthCursor);
+
+          for (let i = 0; i < startOffset; i += 1) {
+            const filler = document.createElement('div');
+            filler.className = 'calendar__cell calendar__cell--filler';
+            filler.setAttribute('role', 'gridcell');
+            gridNode.appendChild(filler);
+          }
+
+          for (let day = 1; day <= daysInMonth; day += 1) {
+            const cellDate = new Date(year, month, day);
+            const dateKey = formatDateKey(cellDate);
+            const eventsForDay = state.eventsByDay.get(dateKey) || [];
+            const hasEvents = eventsForDay.length > 0;
+            const isToday = dateKey === todayKey;
+
+            const cell = document.createElement(hasEvents ? 'button' : 'div');
+            cell.className = 'calendar__cell';
+            cell.setAttribute('role', 'gridcell');
+
+            if (hasEvents) {
+              cell.type = 'button';
+              cell.classList.add('calendar__cell--interactive', 'calendar__cell--has-events');
+              const status = getDayStatus(eventsForDay);
+              cell.classList.add(`calendar__cell--status-${status}`);
+
+              const indicator = document.createElement('span');
+              indicator.className = 'calendar__indicator';
+              cell.appendChild(indicator);
+
+              cell.addEventListener('click', () => openModal(dateKey));
+            } else {
+              cell.tabIndex = -1;
+            }
+
+            if (isToday) {
+              cell.classList.add('calendar__cell--today');
+            }
+
+            const label = new Intl.DateTimeFormat('fr-CA', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            }).format(cellDate);
+
+            cell.setAttribute(
+              'aria-label',
+              hasEvents ? `${label}. ${eventsForDay.length} événement(s)` : label
+            );
+
+            const number = document.createElement('span');
+            number.className = 'calendar__date';
+            number.textContent = day;
+            cell.appendChild(number);
+
+            gridNode.appendChild(cell);
+          }
+        }
+
+        function fillModal(dateKey) {
+          const [year, month, day] = dateKey.split('-').map(Number);
+          const displayDate = new Date(year, month - 1, day);
+          const eventsForDay = (state.eventsByDay.get(dateKey) || []).slice().sort((a, b) => {
+            const aStart = a.start ? new Date(a.start) : new Date(0);
+            const bStart = b.start ? new Date(b.start) : new Date(0);
+            return aStart - bStart;
+          });
+
+          modalTitle.textContent = new Intl.DateTimeFormat('fr-CA', {
+            dateStyle: 'full',
+          }).format(displayDate);
+
+          modalContent.innerHTML = '';
+
+          if (!eventsForDay.length) {
+            modalEmpty.hidden = false;
+            return;
+          }
+
+          modalEmpty.hidden = true;
 
           const dateFormatter = new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long' });
           const timeFormatter = new Intl.DateTimeFormat('fr-CA', { timeStyle: 'short' });
 
-          const formatDateRange = (start, end) => {
-            if (!start) return 'Date à confirmer';
-            const startDate = new Date(start);
-            if (!end) {
-              return `${dateFormatter.format(startDate)} · ${timeFormatter.format(startDate)}`;
-            }
-            const endDate = new Date(end);
-            if (startDate.toDateString() === endDate.toDateString()) {
-              return `${dateFormatter.format(startDate)} · ${timeFormatter.format(startDate)} – ${timeFormatter.format(endDate)}`;
-            }
-            return `${dateFormatter.format(startDate)} → ${dateFormatter.format(endDate)}`;
-          };
+          eventsForDay.forEach((event) => {
+            const fragment = detailTemplate.content.cloneNode(true);
+            const imageNode = fragment.querySelector('.event-detail__image');
+            const titleNode = fragment.querySelector('.event-detail__title');
+            const datetimeNode = fragment.querySelector('.event-detail__datetime');
+            const locationNode = fragment.querySelector('.event-detail__location');
+            const descriptionNode = fragment.querySelector('.event-detail__description');
 
-          const renderGroup = (key, label) => {
-            const groupWrapper = groupsNode.querySelector(`.event-group[data-group="${key}"]`);
-            if (!groupWrapper) return;
+            titleNode.textContent = event.title ?? 'Événement Terra Indomita';
 
-            const listNode = groupWrapper.querySelector('.event-group__list');
-            listNode.innerHTML = '';
+            const start = event.start ? new Date(event.start) : null;
+            const end = event.end ? new Date(event.end) : null;
 
-            if (key === 'current' && !showCurrent) {
-              groupWrapper.hidden = true;
-              return;
+            if (!start) {
+              datetimeNode.textContent = 'Date à confirmer';
+            } else if (!end) {
+              datetimeNode.textContent = `${dateFormatter.format(start)} · ${timeFormatter.format(start)}`;
+            } else if (start.toDateString() === end.toDateString()) {
+              datetimeNode.textContent = `${dateFormatter.format(start)} · ${timeFormatter.format(start)} – ${timeFormatter.format(end)}`;
+            } else {
+              datetimeNode.textContent = `${dateFormatter.format(start)} → ${dateFormatter.format(end)}`;
             }
 
-            if (!groups[key].length) {
-              groupWrapper.hidden = true;
-              return;
+            if (event.location) {
+              locationNode.hidden = false;
+              locationNode.textContent = event.location;
             }
 
-            groupWrapper.hidden = false;
-            groupWrapper.querySelector('.event-group__title').textContent = label;
-
-            groups[key].forEach((event) => {
-              const fragment = template.content.cloneNode(true);
-              const card = fragment.querySelector('.event-card');
-              const titleNode = fragment.querySelector('.event-card__title');
-              const datetimeNode = fragment.querySelector('.event-card__datetime');
-              const locationNode = fragment.querySelector('.event-card__location');
-              const descriptionNode = fragment.querySelector('.event-card__description');
-
-              titleNode.textContent = event.title ?? 'Événement Terra Indomita';
-              datetimeNode.textContent = formatDateRange(event.start, event.end);
-
-              if (event.location) {
-                locationNode.textContent = event.location;
-                locationNode.hidden = false;
-              }
-
-              if (event.description) {
-                descriptionNode.hidden = false;
-                descriptionNode.textContent = '';
-                const lines = String(event.description).split(/\r?\n/);
-                lines.forEach((line, index) => {
+            if (event.description) {
+              descriptionNode.hidden = false;
+              descriptionNode.textContent = '';
+              String(event.description)
+                .split(/\r?\n/)
+                .forEach((line, index) => {
                   if (index > 0) {
                     descriptionNode.appendChild(document.createElement('br'));
                   }
                   descriptionNode.appendChild(document.createTextNode(line));
                 });
-              }
+            }
 
-              listNode.appendChild(card);
-            });
-          };
+            if (event.imageUrl) {
+              imageNode.hidden = false;
+              imageNode.src = event.imageUrl;
+              imageNode.alt = event.title || 'Illustration de l’événement';
+            }
 
-          renderGroup('upcoming', 'À venir');
-          renderGroup('current', 'En cours');
-          renderGroup('past', 'Passés');
-
-          const hasEvents =
-            groups.upcoming.length ||
-            (showCurrent && groups.current.length) ||
-            groups.past.length;
-
-          if (!hasEvents) {
-            statusNode.textContent = 'Aucun événement n’est planifié pour le moment. Revenez bientôt !';
-            statusNode.classList.add('events-status--muted');
-            groupsNode.hidden = true;
-          } else {
-            statusNode.hidden = true;
-            groupsNode.hidden = false;
-          }
-        } catch (error) {
-          console.error('Erreur lors du chargement des événements', error);
-          statusNode.textContent =
-            'Impossible de charger les événements pour le moment. Veuillez réessayer plus tard.';
-          statusNode.classList.add('events-status--error');
-          groupsNode.hidden = true;
+            modalContent.appendChild(fragment);
+          });
         }
-      }
 
-      if ('fetch' in window && window.matchMedia) {
+        function openModal(dateKey) {
+          previousFocus = document.activeElement;
+          fillModal(dateKey);
+          modalNode.hidden = false;
+          modalNode.setAttribute('aria-hidden', 'false');
+          modalDialog.focus();
+          document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+          modalNode.hidden = true;
+          modalNode.setAttribute('aria-hidden', 'true');
+          modalContent.innerHTML = '';
+          modalEmpty.hidden = true;
+          document.body.classList.remove('modal-open');
+          if (previousFocus && typeof previousFocus.focus === 'function') {
+            previousFocus.focus();
+          }
+        }
+
+        modalDismissEls.forEach((el) => {
+          el.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && modalNode.getAttribute('aria-hidden') === 'false') {
+            closeModal();
+          }
+        });
+
+        function changeMonth(offset) {
+          state.monthCursor.setMonth(state.monthCursor.getMonth() + offset);
+          renderCalendar();
+        }
+
+        prevBtn.addEventListener('click', () => changeMonth(-1));
+        nextBtn.addEventListener('click', () => changeMonth(1));
+
+        function normaliseEvents(rawEvents) {
+          return rawEvents
+            .map((event) => {
+              const start = event.start ? new Date(event.start) : null;
+              const end = event.end ? new Date(event.end) : null;
+
+              return {
+                title: event.title?.trim() || 'Événement Terra Indomita',
+                start: event.start ?? null,
+                end: event.end ?? null,
+                location: event.location?.trim() || '',
+                description: event.description?.trim() || '',
+                imageUrl: event.featured_image ? `${ASSET_BASE_URL}${event.featured_image}` : '',
+              };
+            })
+            .filter((event) => Boolean(event.start))
+            .sort((a, b) => {
+              const aStart = a.start ? new Date(a.start) : new Date(0);
+              const bStart = b.start ? new Date(b.start) : new Date(0);
+              return aStart - bStart;
+            });
+        }
+
+        async function loadEvents() {
+          try {
+            showLoadingSkeleton();
+
+            const [eventsRes, settingsRes] = await Promise.all([
+              fetch(EVENTS_URL, { headers: { Accept: 'application/json' } }),
+              fetch(SETTINGS_URL, { headers: { Accept: 'application/json' } }),
+            ]);
+
+            if (!eventsRes.ok || !settingsRes.ok) {
+              throw new Error(`Bad response: ${eventsRes.status}/${settingsRes.status}`);
+            }
+
+            const eventsPayload = await eventsRes.json();
+            const settingsPayload = await settingsRes.json();
+
+            state.events = normaliseEvents(Array.isArray(eventsPayload?.data) ? eventsPayload.data : []);
+            state.showCurrentEvents =
+              (Array.isArray(settingsPayload?.data)
+                ? settingsPayload.data[0]?.showCurrentEvents
+                : settingsPayload?.data?.showCurrentEvents) ?? true;
+
+            hydrateEventsByDay();
+            renderCalendar();
+
+            const hasEvents = state.events.length > 0;
+
+            if (!hasEvents) {
+              statusNode.textContent = 'Aucun événement n’est planifié pour le moment. Revenez bientôt !';
+              statusNode.classList.add('events-status--muted');
+              statusNode.hidden = false;
+            } else {
+              statusNode.hidden = true;
+              statusNode.classList.remove('events-status--muted', 'events-status--error');
+            }
+          } catch (error) {
+            console.error('Erreur lors du chargement des événements', error);
+            statusNode.textContent =
+              'Impossible de charger les événements pour le moment. Veuillez réessayer plus tard.';
+            statusNode.classList.add('events-status--error');
+            calendarNode.hidden = true;
+          }
+        }
+
         loadEvents();
-      }
+      })();
     </script>
   </body>
 </html>
