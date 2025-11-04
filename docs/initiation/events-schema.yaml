@@ -17,13 +17,6 @@ fields:
     maxLength: 140
     description: Human-readable event name
 
-  - key: slug
-    type: string
-    required: false
-    unique: true
-    pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
-    description: URL-safe identifier (optional now; future-friendly)
-
   - key: start
     type: datetime
     required: true
@@ -105,7 +98,6 @@ api:
 
 examples:
   - title: 'Stage de formation'
-    slug: 'stage-formation-mars'
     start: '2025-03-21T09:00:00-04:00'
     end: '2025-03-21T17:00:00-04:00'
     location: 'Estrie, QC'
@@ -114,7 +106,6 @@ examples:
     featured_image: './assets/images/offre-stage-formation.jpg'
 
   - title: 'Camp immersif'
-    slug: 'camp-immersif-ete'
     start: '2025-07-12T10:00:00-04:00'
     end: '2025-07-14T16:00:00-04:00'
     location: 'Mauricie, QC'

@@ -148,7 +148,45 @@
             </p>
           </div>
         </div>
+
+        </section>
+
+            <section class="section section--light section--events" id="evenements">
+        <div class="container">
+          <p class="eyebrow eyebrow--dark">Événements</p>
+          <p class="section__intro">
+            Découvrez nos rendez-vous à venir et suivez l’actualité de Terra Indomita.
+          </p>
+
+          <div id="events-status" class="events-status">Chargement des événements…</div>
+
+          <div id="events-groups" class="events-groups" hidden>
+            <div class="event-group" data-group="upcoming">
+              <h2 class="event-group__title">À venir</h2>
+              <div class="event-group__list" role="list"></div>
+            </div>
+
+            <div class="event-group" data-group="current" hidden>
+              <h2 class="event-group__title">En cours</h2>
+              <div class="event-group__list" role="list"></div>
+            </div>
+
+            <div class="event-group" data-group="past">
+              <h2 class="event-group__title">Passés</h2>
+              <div class="event-group__list" role="list"></div>
+            </div>
+          </div>
+        </div>
       </section>
+
+      <template id="event-card-template">
+        <article class="event-card" role="listitem">
+          <h3 class="event-card__title"></h3>
+          <p class="event-card__datetime"></p>
+          <p class="event-card__location" hidden></p>
+          <p class="event-card__description" hidden></p>
+        </article>
+      </template>
 
       <section class="section section--dark section--contacts" id="contact">
         <div class="container">
@@ -197,6 +235,169 @@
           console.warn('Image introuvable:', image.getAttribute('src'));
         });
       });
+
+      async function loadEvents() {
+        const statusNode = document.getElementById('events-status');
+        const groupsNode = document.getElementById('events-groups');
+        const template = document.getElementById('event-card-template');
+
+        if (!statusNode || !groupsNode || !template) return;
+
+        const EVENTS_URL =
+          'https://api.terra-indomita.ca/items/events?sort=start&fields=title,start,end,location,description';
+        const SETTINGS_URL = 'https://api.terra-indomita.ca/items/global_settings';
+
+        try {
+          const [eventsRes, settingsRes] = await Promise.all([
+            fetch(EVENTS_URL, { headers: { Accept: 'application/json' } }),
+            fetch(SETTINGS_URL, { headers: { Accept: 'application/json' } }),
+          ]);
+
+          if (!eventsRes.ok || !settingsRes.ok) {
+            throw new Error(`Bad response: ${eventsRes.status}/${settingsRes.status}`);
+          }
+
+          const eventsPayload = await eventsRes.json();
+          const settingsPayload = await settingsRes.json();
+
+          const events = eventsPayload?.data ?? [];
+          const showCurrent =
+            (Array.isArray(settingsPayload?.data)
+              ? settingsPayload.data[0]?.showCurrentEvents
+              : settingsPayload?.data?.showCurrentEvents) ?? true;
+
+          const now = new Date();
+          const groups = { upcoming: [], current: [], past: [] };
+
+          events.forEach((event) => {
+            const start = event.start ? new Date(event.start) : null;
+            const end = event.end ? new Date(event.end) : null;
+
+            if (!start) {
+              groups.past.push(event);
+              return;
+            }
+
+            if (start > now) {
+              groups.upcoming.push(event);
+              return;
+            }
+
+            if (!showCurrent) {
+              groups.past.push(event);
+              return;
+            }
+
+            if (end && now <= end) {
+              groups.current.push(event);
+              return;
+            }
+
+            if (!end && start.toDateString() === now.toDateString()) {
+              groups.current.push(event);
+              return;
+            }
+
+            groups.past.push(event);
+          });
+
+          const dateFormatter = new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long' });
+          const timeFormatter = new Intl.DateTimeFormat('fr-CA', { timeStyle: 'short' });
+
+          const formatDateRange = (start, end) => {
+            if (!start) return 'Date à confirmer';
+            const startDate = new Date(start);
+            if (!end) {
+              return `${dateFormatter.format(startDate)} · ${timeFormatter.format(startDate)}`;
+            }
+            const endDate = new Date(end);
+            if (startDate.toDateString() === endDate.toDateString()) {
+              return `${dateFormatter.format(startDate)} · ${timeFormatter.format(startDate)} – ${timeFormatter.format(endDate)}`;
+            }
+            return `${dateFormatter.format(startDate)} → ${dateFormatter.format(endDate)}`;
+          };
+
+          const renderGroup = (key, label) => {
+            const groupWrapper = groupsNode.querySelector(`.event-group[data-group="${key}"]`);
+            if (!groupWrapper) return;
+
+            const listNode = groupWrapper.querySelector('.event-group__list');
+            listNode.innerHTML = '';
+
+            if (key === 'current' && !showCurrent) {
+              groupWrapper.hidden = true;
+              return;
+            }
+
+            if (!groups[key].length) {
+              groupWrapper.hidden = true;
+              return;
+            }
+
+            groupWrapper.hidden = false;
+            groupWrapper.querySelector('.event-group__title').textContent = label;
+
+            groups[key].forEach((event) => {
+              const fragment = template.content.cloneNode(true);
+              const card = fragment.querySelector('.event-card');
+              const titleNode = fragment.querySelector('.event-card__title');
+              const datetimeNode = fragment.querySelector('.event-card__datetime');
+              const locationNode = fragment.querySelector('.event-card__location');
+              const descriptionNode = fragment.querySelector('.event-card__description');
+
+              titleNode.textContent = event.title ?? 'Événement Terra Indomita';
+              datetimeNode.textContent = formatDateRange(event.start, event.end);
+
+              if (event.location) {
+                locationNode.textContent = event.location;
+                locationNode.hidden = false;
+              }
+
+              if (event.description) {
+                descriptionNode.hidden = false;
+                descriptionNode.textContent = '';
+                const lines = String(event.description).split(/\r?\n/);
+                lines.forEach((line, index) => {
+                  if (index > 0) {
+                    descriptionNode.appendChild(document.createElement('br'));
+                  }
+                  descriptionNode.appendChild(document.createTextNode(line));
+                });
+              }
+
+              listNode.appendChild(card);
+            });
+          };
+
+          renderGroup('upcoming', 'À venir');
+          renderGroup('current', 'En cours');
+          renderGroup('past', 'Passés');
+
+          const hasEvents =
+            groups.upcoming.length ||
+            (showCurrent && groups.current.length) ||
+            groups.past.length;
+
+          if (!hasEvents) {
+            statusNode.textContent = 'Aucun événement n’est planifié pour le moment. Revenez bientôt !';
+            statusNode.classList.add('events-status--muted');
+            groupsNode.hidden = true;
+          } else {
+            statusNode.hidden = true;
+            groupsNode.hidden = false;
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement des événements', error);
+          statusNode.textContent =
+            'Impossible de charger les événements pour le moment. Veuillez réessayer plus tard.';
+          statusNode.classList.add('events-status--error');
+          groupsNode.hidden = true;
+        }
+      }
+
+      if ('fetch' in window && window.matchMedia) {
+        loadEvents();
+      }
     </script>
   </body>
 </html>
