@@ -136,16 +136,19 @@ I’m building a fast public landing site with an events section that automatica
 
 3. **CMS**
 
-   * Install on my server; create `events` collection with the agreed fields.
-   * Add a **Global Settings** collection (includes “Show Current Events”).
-   * Create the limited client role and user; document the workflow.
-      Database File Path: (/home/prod/terra-indomita.ca/cms/data.db)
+   * Install on my server; create `events` collection with the agreed fields. [Done]
+   * Add a **Global Settings** collection (includes “Show Current Events”). [Done]
+   * Create the limited client role and user; document the workflow. [Done]
+
+   Status: Completed
 
 4. **API**
 
-   * Public read endpoint for events (normalized shape; cache-hint headers).
-   * Authenticated write endpoints for admin ops (used by CMS or kept for future).
-   * Health endpoint for monitoring.
+   * Public read endpoint for events (Directus /items/events). — [Done]
+   * Authenticated write endpoints for admin ops (Directus roles + static token). — [Done]
+   * Health endpoint for monitoring (/server/health). — [Done]
+
+   Status: Completed — using native Directus endpoints with Cloudflare caching.
 
 5. **Frontend**
 
