@@ -4,8 +4,8 @@
 - API base: https://api.terra-indomita.ca (tunnel -> Directus on port 8055)
 
 ## Content Model
-- Collection `events` (UUID PK)
-  - Fields: title, slug, start, end, location, description, featured_image
+  - Collection `events` (UUID PK)
+    - Fields: title, start, end, location, description, featured_image
 - Singleton `global_settings`
   - Field: showCurrentEvents (boolean, default true)
 
