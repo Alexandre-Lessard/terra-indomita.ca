@@ -20,9 +20,9 @@
 
 ## API Usage
 - Frontend fetches:
-  - GET /items/events?sort=start&fields=title,slug,start,end,location,description,featured_image
+  - GET /items/events?sort=start&fields=title,start,end,location,description,featured_image
   - GET /items/global_settings
-- Client-side groups events into Upcoming/Current/Past using documented rules.
+- The calendar UI groups events by day and opens a modal with details.
 
 ## Operations
 - Health: GET /server/health

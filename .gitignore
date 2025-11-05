@@ -1,5 +1,5 @@
 cms/node_modules/
-cms/database/*.db
+cms/*.db
 cms/uploads/
 cms/extensions/
 cms/.env
