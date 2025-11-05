@@ -26,3 +26,8 @@
 ## Fallback Behaviour
 - If the API fails, show the existing friendly message and hide the calendar grid.
 - When no events exist for the selected month, display a muted empty-state message in the overlay.
+
+## Implementation Notes
+- Loading state shows a shimmering placeholder grid before event data renders.
+- Day indicators now fill most of the cell to make busy dates obvious (upcoming/current/past color coding).
+- Event modal grows up to 720px wide, scrolls when content is tall, and displays the featured image at the top using `object-fit: contain` so nothing is cropped or stretched.
