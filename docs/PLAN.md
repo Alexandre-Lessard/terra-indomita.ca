@@ -144,19 +144,19 @@ I’m building a fast public landing site with an events section that automatica
 
 4. **API**
 
-   * Public read endpoint for events (Directus /items/events). — [Done]
-   * Authenticated write endpoints for admin ops (Directus roles + static token). — [Done]
-   * Health endpoint for monitoring (/server/health). — [Done]
+   * Public read endpoint for events (Directus /items/events). [Done]
+   * Authenticated write endpoints for admin ops (Directus roles + static token). [Done]
+   * Health endpoint for monitoring (/server/health). [Done]
 
    Status: Completed — using native Directus endpoints with Cloudflare caching.
 
 5. **Frontend**
 
-   * Build the landing page and calendar-based events experience with accessible brand styling.
-   * Implement month navigation (previous/next), default to the current month, and highlight today.
-   * Color days that have events; clicking a day opens an overlay with event details.
-   * Implement client-side grouping logic; respect the **“Show Current Events”** toggle.
-   * Add **graceful fallback UI** if the API is unavailable.
+   * Build the landing page and calendar-based events experience with accessible brand styling. [Done]
+   * Implement month navigation (previous/next), default to the current month, and highlight today. [Done]
+   * Color days that have events; clicking a day opens an overlay with event details. [Done]
+   * Implement client-side grouping logic; respect the **“Show Current Events”** toggle. [Done]
+   * Add **graceful fallback UI** if the API is unavailable. [Done]
 
 6. **Cloudflare behavior**
 

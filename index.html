@@ -154,9 +154,6 @@
       <section class="section section--light section--events" id="evenements">
         <div class="container">
           <p class="eyebrow eyebrow--dark">Événements</p>
-          <p class="section__intro">
-            Découvrez nos rendez-vous à venir et naviguez le calendrier pour explorer les activités de Terra Indomita.
-          </p>
 
           <div id="events-status" class="events-status" role="status">
             Chargement des événements…
@@ -658,11 +655,15 @@
               statusNode.classList.remove('events-status--muted', 'events-status--error');
             }
           } catch (error) {
-            console.error('Erreur lors du chargement des événements', error);
-            statusNode.textContent =
-              'Impossible de charger les événements pour le moment. Veuillez réessayer plus tard.';
-            statusNode.classList.add('events-status--error');
-            calendarNode.hidden = true;
+          console.error('Erreur lors du chargement des événements', error);
+          statusNode.textContent =
+            'Impossible de charger les événements pour le moment. Veuillez réessayer plus tard.';
+          statusNode.classList.add('events-status--error');
+
+          calendarNode.classList.remove('calendar--loading');
+          gridNode.classList.remove('calendar__grid--loading');
+          gridNode.innerHTML = '';
+          calendarNode.hidden = true;
           }
         }
 
