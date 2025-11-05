@@ -158,10 +158,14 @@ I’m building a fast public landing site with an events section that automatica
    * Implement client-side grouping logic; respect the **“Show Current Events”** toggle. [Done]
    * Add **graceful fallback UI** if the API is unavailable. [Done]
 
+   Status: Completed
+
 6. **Cloudflare behavior**
 
-   * Cache rules: static site cached; `/events` short TTL; bypass for admin/auth.
-   * Configure **outage page** to show a clear “site down—please check back later” message if the origin is unreachable.
+   * Cache rules: static site cached; `/events` short TTL; bypass for admin/auth. [Done] (documented in docs/infra/cloudflare-behavior.md)
+   * Configure **outage page** to show a clear “site down—please check back later” message if the origin is unreachable. [Done] (Custom error page + frontend fallback)
+
+   Status: Completed — cache rules documented and outage plan in place.
 
 7. **Testing (on the temporary subdomain)**
 
