@@ -78,24 +78,22 @@ indexes:
     fields: [start, end]
 
 api:
-  read:
-    path: /events
-    method: GET
-    response:
-      contentType: application/json
-      shape:
-        meta:
-          showCurrentEvents: boolean
-          generatedAt: datetime   # RFC3339
-          timezone: string        # e.g., 'America/Toronto'
-        events: array             # of event objects (fields above)
+  public:
+    events:
+      path: /items/events
+      method: GET
+      query: sort=start&fields=title,start,end,location,description,featured_image
+    settings:
+      path: /items/global_settings
+      method: GET
+      fields: [showCurrentEvents]
   health:
-    path: /health
+    path: /server/health
     method: GET
     response:
       status: 200
       body: ok
-
+      
 examples:
   - title: 'Stage de formation'
     start: '2025-03-21T09:00:00-04:00'

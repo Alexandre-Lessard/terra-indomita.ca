@@ -29,3 +29,10 @@ GET https://api.terra-indomita.ca/items/global_settings
       "start": "2025-03-21T09:00:00-04:00",
       "location": "Estrie, QC"
     }'
+
+## Health Check
+GET https://api.terra-indomita.ca/server/health
+
+- Returns 200 OK with simple payload.
+- Use Cloudflare Health Checks to monitor this endpoint.
+- Do not cache.

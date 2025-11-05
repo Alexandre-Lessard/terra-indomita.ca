@@ -162,24 +162,28 @@ I’m building a fast public landing site with an events section that automatica
 
 6. **Cloudflare behavior**
 
-   * Cache rules: static site cached; `/events` short TTL; bypass for admin/auth. [Done] (documented in docs/infra/cloudflare-behavior.md)
+   * Cache rules: static site cached; `/items/events` and `/items/global_settings` short TTL; bypass for admin/auth.
    * Configure **outage page** to show a clear “site down—please check back later” message if the origin is unreachable. [Done] (Custom error page + frontend fallback)
 
-   Status: Completed — cache rules documented and outage plan in place.
+   Status: Completed — cache rules documented (see docs/infra/cloudflare-behavior.md).
 
 7. **Testing (on the temporary subdomain)**
 
-   * Functional: CRUD in CMS, time-based transitions, toggle “Current”.
-   * Resilience: simulate API downtime → frontend fallback; simulate origin down → outage page.
-   * Performance: edge delivery for static; acceptable latency for events fetch.
+   * Functional: CRUD in CMS, time-based transitions, toggle “Current”. [Done]
+   * Resilience: simulate API downtime → frontend fallback; simulate origin down → outage page. [Done]
+   * Performance: edge delivery for static; acceptable latency for events fetch. [Done]
+
+   Status: Completed
 
 8. **Migration**
 
-   * Keep the old GitHub page live during staging.
-   * Finalize content and approvals on the **temporary subdomain**.
-   * Schedule DNS cutover window.
-   * Cut over the root/primary domain to the new Cloudflare Pages project.
-   * Validate, purge caches, set up redirects if any URLs changed.
+   * Keep the old GitHub page live during staging. [Done]
+   * Finalize content and approvals on the **temporary subdomain**. [Done]
+   * Schedule DNS cutover window. [Done]
+   * Cut over the root/primary domain to the new Cloudflare Pages project. [Done]
+   * Validate, purge caches, set up redirects if any URLs changed. [Done]
+
+   Status: Completed
 
 9. **Post-launch**
 
@@ -191,12 +195,12 @@ I’m building a fast public landing site with an events section that automatica
 
 ## 11) Milestones
 
-* **M1**: Cloudflare Pages + DNS + Tunnel working (staging subdomain live).
-* **M2**: CMS ready (events model + settings + client role).
-* **M3**: API ready (read + cache hints + health).
-* **M4**: Frontend ready (landing, events, fallback UX, toggle respected).
-* **M5**: Staging tests passed (functional, resilience, performance).
-* **M6**: Migration & go-live (DNS cutover, cache purge, verification).
+* **M1**: Cloudflare Pages + DNS + Tunnel working (staging subdomain live). [Done]
+* **M2**: CMS ready (events model + settings + client role). [Done]
+* **M3**: API ready (read + cache hints + health). [Done]
+* **M4**: Frontend ready (landing, events, fallback UX, toggle respected). [Done]
+* **M5**: Staging tests passed (functional, resilience, performance). [Done]
+* **M6**: Migration & go-live (DNS cutover, cache purge, verification). [Done]
 
 ---
 
