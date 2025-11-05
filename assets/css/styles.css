@@ -517,9 +517,7 @@ img {
 .event-detail__image {
   display: block;
   width: auto;
-  max-width: min(100%, 420px);
   height: auto;
-  max-height: clamp(200px, 52vh, 380px);
   margin: 0 auto;
   border-radius: 12px;
   background: rgba(20, 32, 18, 0.08);
