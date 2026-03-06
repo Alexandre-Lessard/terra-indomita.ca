@@ -1,5 +1,19 @@
-cms/node_modules/
+# Dependencies
+node_modules/
+
+# Frontend
+frontend/.next/
+frontend/out/
+
+# CMS
 cms/*.db
 cms/uploads/
 cms/extensions/
 cms/.env
+
+# Env
+.env.local
+.deploy.env
+
+# Notes
+notes/
