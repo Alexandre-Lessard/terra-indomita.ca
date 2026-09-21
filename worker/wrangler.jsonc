@@ -1,0 +1,104 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Local development: `npm run dev` (see docs/workflow.md). Deployed
+  // environments are `staging` and `production`, never the top level.
+  "name": "terra-indomita-dev",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "../frontend/out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/admin*"]
+  },
+  "vars": {
+    "SITE_ENV": "development",
+    "AUTH_MODE": "dev",
+    "NOTIFY_FROM": "inscriptions@terra-indomita.ca",
+    "NOTIFY_TO": "alexandre.lessard92@gmail.com"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "terra-indomita-dev",
+      "database_id": "local",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "terra-indomita-images-dev" }],
+  "send_email": [{ "name": "EMAIL", "destination_address": "alexandre.lessard92@gmail.com" }],
+  "ratelimits": [
+    { "name": "REGISTRATION_LIMITER", "namespace_id": "3101", "simple": { "limit": 5, "period": 60 } }
+  ],
+  "triggers": { "crons": ["17 7 * * *"] },
+
+  "env": {
+    "staging": {
+      "name": "terra-indomita-staging",
+      "workers_dev": true,
+      "preview_urls": false,
+      // The whole staging host sits behind Access, so the Worker runs first
+      // everywhere to add noindex headers and serve a deny-all robots.txt.
+      "assets": {
+        "directory": "../frontend/out",
+        "binding": "ASSETS",
+        "not_found_handling": "404-page",
+        "run_worker_first": true
+      },
+      "vars": {
+        "SITE_ENV": "staging",
+        "AUTH_MODE": "access",
+        "ACCESS_TEAM_DOMAIN": "https://al-si.cloudflareaccess.com",
+        "ACCESS_AUD": "28a5e0329a1a0286a972361796832a17ebdfce2c095871baccfd352deaec67a4",
+        "NOTIFY_FROM": "inscriptions@terra-indomita.ca",
+        "NOTIFY_TO": "alexandre.lessard92@gmail.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "terra-indomita-staging",
+          "database_id": "8dc1fd4a-1be0-4ab1-9751-1222d9f3da08",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "terra-indomita-images-staging" }],
+      "send_email": [{ "name": "EMAIL", "destination_address": "alexandre.lessard92@gmail.com" }],
+      "ratelimits": [
+        { "name": "REGISTRATION_LIMITER", "namespace_id": "3102", "simple": { "limit": 5, "period": 60 } }
+      ],
+      "triggers": { "crons": ["17 7 * * *"] }
+    },
+
+    // Not attached to terra-indomita.ca until the cutover described in
+    // docs/infra/mise-en-production.md.
+    "production": {
+      "name": "terra-indomita",
+      "workers_dev": false,
+      "preview_urls": false,
+      "vars": {
+        "SITE_ENV": "production",
+        "AUTH_MODE": "access",
+        "ACCESS_TEAM_DOMAIN": "https://al-si.cloudflareaccess.com",
+        "ACCESS_AUD": "51556c5bc3acbeda2e73e7abbb2b4b30888fe64e03f5e75f24f0462729f7a9a4",
+        "NOTIFY_FROM": "inscriptions@terra-indomita.ca",
+        "NOTIFY_TO": "terra_indomita@outlook.com"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "terra-indomita-prod",
+          "database_id": "b9ea8aec-5fc0-4e9f-97e5-f35b7d40d219",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "terra-indomita-images-prod" }],
+      "send_email": [{ "name": "EMAIL", "destination_address": "terra_indomita@outlook.com" }],
+      "ratelimits": [
+        { "name": "REGISTRATION_LIMITER", "namespace_id": "3103", "simple": { "limit": 5, "period": 60 } }
+      ],
+      "triggers": { "crons": ["17 7 * * *"] }
+    }
+  }
+}
