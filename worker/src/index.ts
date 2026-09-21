@@ -16,7 +16,14 @@ api.onError((err, c) => {
 const STAGING_ROBOTS = "User-agent: *\nDisallow: /\n";
 
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-  const { pathname } = new URL(request.url);
+  const url = new URL(request.url);
+  const { pathname } = url;
+
+  // One canonical host: www.terra-indomita.ca redirects to the apex.
+  if (url.hostname.startsWith("www.")) {
+    url.hostname = url.hostname.slice(4);
+    return Response.redirect(url.toString(), 301);
+  }
 
   if (pathname.startsWith("/api/")) return api.fetch(request, env, ctx);
 

@@ -199,6 +199,19 @@ describe("retention", () => {
   });
 });
 
+describe("canonical host", () => {
+  it("redirects www to the apex, keeping the path", async () => {
+    const request = new Request("https://www.terra-indomita.ca/confidentialite/?a=1") as Request<
+      unknown,
+      IncomingRequestCfProperties
+    >;
+    const ctx = createExecutionContext();
+    const response = await worker.fetch(request, env, ctx);
+    expect(response.status).toBe(301);
+    expect(response.headers.get("Location")).toBe("https://terra-indomita.ca/confidentialite/?a=1");
+  });
+});
+
 describe("staging", () => {
   const staging = { SITE_ENV: "staging" } as Partial<Env>;
 
