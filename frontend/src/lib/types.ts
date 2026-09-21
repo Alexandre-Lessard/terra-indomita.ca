@@ -19,6 +19,9 @@ export interface RegistrationPayload {
   name: string;
   email: string;
   phone?: string;
+  consent: true;
+  turnstileToken: string;
+  website?: string;
 }
 
 export type EventStatus = "upcoming" | "current" | "past";

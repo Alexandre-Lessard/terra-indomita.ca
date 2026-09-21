@@ -33,13 +33,23 @@ export function About() {
           <p className="mb-4 text-xl font-semibold uppercase tracking-[0.2em] text-brand-accent">
             Qui sommes-nous
           </p>
-          <p className="text-[1.05rem] leading-relaxed">
-            <strong>Terra Indomita</strong> est une école de plein air qui offre
-            des stages et des camps immersifs pour développer votre autonomie en
-            plein air, en vue d&apos;activités de plein air planifiées ou
-            simplement pour approfondir vos connaissances pour le plaisir, ou
-            pour vous préparer à faire face à des bris de normalité.
-          </p>
+          <div className="space-y-4 text-[1.05rem] leading-relaxed">
+            <p>
+              <strong>Terra Indomita</strong> est une école de plein air établie à Franklin, en
+              Montérégie. Nous aidons les gens de tout âge à devenir plus autonomes dehors : purifier
+              l&apos;eau, rester au chaud grâce à un abri et un feu, reconnaître les arbres et les
+              plantes, comprendre le comportement des animaux et des oiseaux, pêcher et poser des
+              collets.
+            </p>
+            <p>
+              Notre approche n&apos;est pas la survie une fois perdu. Nous vous apprenons plutôt à ne
+              pas vous perdre et à planifier vos activités de plein air en toute sécurité.
+            </p>
+            <p>
+              C&apos;est aussi une occasion de décrocher des écrans, de sortir de votre zone de confort
+              et de rencontrer des gens qui partagent le goût de la forêt.
+            </p>
+          </div>
         </motion.div>
       </div>
     </section>

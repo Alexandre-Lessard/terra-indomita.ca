@@ -1,43 +1,34 @@
 import type { Event, GlobalSettings, RegistrationPayload } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-const ASSET_URL = process.env.NEXT_PUBLIC_ASSET_URL!;
+// The site and its API share one origin (the Worker), so every call is relative.
 
-interface DirectusResponse<T> {
-  data: T;
+interface ApiEvent {
+  id: string;
+  title: string;
+  start: string | null;
+  end: string | null;
+  location: string;
+  description: string;
+  image: string | null;
 }
 
-interface RawEvent {
-  id?: string;
-  title?: string;
-  start?: string;
-  end?: string;
-  location?: string;
-  description?: string;
-  featured_image?: string;
-}
-
-function normaliseEvent(raw: RawEvent): Event {
+function normaliseEvent(raw: ApiEvent): Event {
   return {
-    id: raw.id || "",
+    id: raw.id,
     title: raw.title?.trim() || "Événement Terra Indomita",
     start: raw.start ?? null,
     end: raw.end ?? null,
     location: raw.location?.trim() || "",
     description: raw.description?.trim() || "",
-    imageUrl: raw.featured_image ? `${ASSET_URL}/${raw.featured_image}` : "",
+    imageUrl: raw.image || "",
   };
 }
 
 export async function fetchEvents(): Promise<Event[]> {
-  const res = await fetch(
-    `${API_URL}/items/events?sort=start&fields=id,title,start,end,location,description,featured_image`,
-    { headers: { Accept: "application/json" } },
-  );
-
+  const res = await fetch("/api/events", { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`Events fetch failed: ${res.status}`);
 
-  const payload: DirectusResponse<RawEvent[]> = await res.json();
+  const payload: { data: ApiEvent[] } = await res.json();
   return payload.data
     .map(normaliseEvent)
     .filter((e) => Boolean(e.start))
@@ -49,33 +40,32 @@ export async function fetchEvents(): Promise<Event[]> {
 }
 
 export async function fetchGlobalSettings(): Promise<GlobalSettings> {
-  const res = await fetch(`${API_URL}/items/global_settings`, {
-    headers: { Accept: "application/json" },
-  });
-
+  const res = await fetch("/api/settings", { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`Settings fetch failed: ${res.status}`);
 
-  const payload: DirectusResponse<
-    GlobalSettings | GlobalSettings[]
-  > = await res.json();
-  const data = Array.isArray(payload.data)
-    ? payload.data[0]
-    : payload.data;
-
-  return { showCurrentEvents: data?.showCurrentEvents ?? true };
+  const payload: { data?: Partial<GlobalSettings> } = await res.json();
+  return { showCurrentEvents: payload.data?.showCurrentEvents ?? true };
 }
 
-export async function submitRegistration(
-  data: RegistrationPayload,
-): Promise<void> {
-  const res = await fetch(`${API_URL}/items/event_registrations`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+/** Thrown when the server refuses a registration; `message` is shown to the visitor. */
+export class RegistrationError extends Error {}
 
-  if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
+export async function submitRegistration(data: RegistrationPayload): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch("/api/registrations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(data),
+    });
+  } catch {
+    throw new RegistrationError(
+      "Impossible de joindre le serveur. Vérifiez votre connexion, puis réessayez.",
+    );
+  }
+
+  if (res.ok) return;
+
+  const body: { error?: string } = await res.json().catch(() => ({}));
+  throw new RegistrationError(body.error || "Une erreur est survenue. Veuillez réessayer.");
 }

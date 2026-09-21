@@ -17,14 +17,14 @@ const offers: Offer[] = [
     image: "/images/offre-stage-formation.jpg",
     alt: "Participants sous un abri en forêt",
     description:
-      "Les stages sont la porte d'entrée au monde de l'autonomie en plein air. Venez apprendre ou consolider vos connaissances et pratiquer dans un cadre éducatif et familial. Accessible, peu importe votre condition physique. Disponible aux formats 4 h, 8 h, 48 h et plus.",
+      "Les stages sont la porte d'entrée de l'autonomie en plein air. Apprenez à vous orienter, à préparer une sortie en sécurité et à combler vos besoins de base en forêt, dans un cadre éducatif et familial. Pour tous les âges, peu importe votre condition physique. Offerts aux formats 4 h, 8 h, 48 h et plus.",
   },
   {
     title: "Camp immersif",
     image: "/images/offre-camp-immersif.jpg",
     alt: "Campement en pleine forêt",
     description:
-      "Venez tester vos connaissances et aptitudes dans un événement en pleine nature. Construction d'abris naturels, bushcraft, bivouac, cuisine en pleine nature, cueillette, chasse et pêche. Comme nos arrière-grands-parents !",
+      "Mettez vos connaissances en pratique pendant quelques jours en pleine nature : abris naturels, feu, eau potable, bivouac, cuisine en forêt, cueillette, pêche et pose de collets. Comme nos arrière-grands-parents, en bonne compagnie !",
     extra:
       "Nécessite une bonne forme physique pour les déplacements en milieu sauvage.",
   },
@@ -33,7 +33,7 @@ const offers: Offer[] = [
     image: "/images/offre-mentorat-prive.jpg",
     alt: "Lecture de carte et boussole",
     description:
-      "Vous souhaitez définir vos besoins et votre niveau, pour vous, vos proches ou votre famille. Nous offrons également des stages et des camps immersifs privés.",
+      "Un accompagnement adapté à vos besoins et à votre niveau, pour vous, vos proches ou votre famille : préparer une expédition, gagner en confiance en forêt ou approfondir une compétence. Nous offrons aussi des stages et des camps immersifs privés.",
   },
 ];
 

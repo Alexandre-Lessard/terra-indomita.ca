@@ -34,21 +34,23 @@ export function Founder() {
             À propos du fondateur
           </p>
           <p>
-            Depuis maintenant huit ans, Alex se passionne pour la survie en
-            forêt, l&apos;autonomie en plein air, le savoir ancestral et bien
-            plus encore.
+            Depuis maintenant huit ans, Alex se passionne pour l&apos;autonomie
+            en plein air, la vie en forêt, le savoir ancestral et bien plus
+            encore.
           </p>
           <p>
             Il s&apos;est formé auprès d&apos;écoles bien établies au Québec,
             telles que Les Primitifs, Kanatha-Aki et Un Goût de Forêt. En plus
-            de ses compétences en survie et en vie en nature, Alex est
-            secouriste formé et cumule plus de dix ans d&apos;expérience dans le
-            domaine de la sécurité privée.
+            de ses compétences en vie en nature, Alex est secouriste formé et
+            cumule plus de dix ans d&apos;expérience dans le domaine de la
+            sécurité privée : la prévention et la sécurité sont au cœur de son
+            enseignement.
           </p>
           <p>
             Après avoir passé plusieurs années à organiser des activités de
-            plein air avec sa famille et ses amis, il a maintenant décidé de
-            transmettre sa passion au plus grand nombre.
+            plein air avec sa famille et ses amis, il a décidé de transmettre sa
+            passion au plus grand nombre, pour ramener les gens dehors et créer
+            une communauté autour de la forêt.
           </p>
           <p>
             Alex prône une approche inclusive et sans jugement du monde. Le
