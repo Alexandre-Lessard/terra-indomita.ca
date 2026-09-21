@@ -1,0 +1,27 @@
+{
+  "name": "terra-indomita",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
+  "workspaces": [
+    "frontend",
+    "worker"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w worker",
+    "build": "npm run build -w frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "workerd": true,
+    "unrs-resolver": false
+  },
+  "overrides": {
+    "sharp": "^0.35.4"
+  }
+}

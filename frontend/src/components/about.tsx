@@ -16,7 +16,7 @@ export function About() {
         >
           <Image
             src="/images/about-forest.jpg"
-            alt="Forêt boréale québécoise"
+            alt="Ruisseau bordé de fougères en forêt"
             width={480}
             height={360}
             className="w-[min(480px,100%)] rounded-2xl object-cover shadow-[0_12px_40px_-8px_rgba(0,0,0,0.4)]"
