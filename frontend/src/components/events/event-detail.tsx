@@ -29,9 +29,9 @@ export function EventDetail({ event, showCurrentEvents }: EventDetailProps) {
   }
 
   return (
-    <article className="space-y-3">
+    <article className="space-y-3 border-l-4 border-brand-accent pl-5">
       {event.imageUrl && (
-        <div className="relative aspect-video overflow-hidden rounded-md">
+        <div className="relative aspect-video overflow-hidden rounded-lg">
           <Image
             src={event.imageUrl}
             alt={event.title}
@@ -41,15 +41,23 @@ export function EventDetail({ event, showCurrentEvents }: EventDetailProps) {
         </div>
       )}
 
-      <h4 className="text-lg font-semibold">{event.title}</h4>
-      <p className="text-sm text-muted-foreground">{datetimeText}</p>
+      <h4 className="text-[1.15rem] font-semibold text-[#0e2514]">
+        {event.title}
+      </h4>
+      <p className="text-[0.9rem] text-[rgba(14,37,20,0.6)]">
+        {datetimeText}
+      </p>
 
       {event.location && (
-        <p className="text-sm text-muted-foreground">{event.location}</p>
+        <p className="text-[0.9rem] text-[rgba(14,37,20,0.6)]">
+          {event.location}
+        </p>
       )}
 
       {event.description && (
-        <p className="text-sm whitespace-pre-line">{event.description}</p>
+        <p className="text-[0.95rem] leading-relaxed whitespace-pre-line text-[#0e2514]">
+          {event.description}
+        </p>
       )}
 
       {showRegistration && <RegistrationForm eventId={event.id} />}

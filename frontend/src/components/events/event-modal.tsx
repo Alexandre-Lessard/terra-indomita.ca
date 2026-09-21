@@ -41,13 +41,15 @@ export function EventModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-[680px] overflow-y-auto rounded-[18px] border border-[rgba(20,32,18,0.14)] bg-[#fcf9f3] p-[2.4rem] shadow-[0_24px_56px_-20px_rgba(20,32,18,0.45)]">
         <DialogHeader>
-          <DialogTitle className="capitalize">{displayDate}</DialogTitle>
+          <DialogTitle className="text-[1.35rem] font-semibold capitalize text-[#0e2514]">
+            {displayDate}
+          </DialogTitle>
         </DialogHeader>
 
         {sorted.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[0.95rem] text-[rgba(14,37,20,0.6)]">
             Aucun événement n&apos;est prévu pour cette date.
           </p>
         ) : (

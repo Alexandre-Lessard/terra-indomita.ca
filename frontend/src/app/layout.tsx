@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Terra Indomita — École de plein air",
   description:
     "Stages de formation, camps immersifs et mentorat privé pour développer votre autonomie en plein air.",
+  icons: {
+    icon: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({

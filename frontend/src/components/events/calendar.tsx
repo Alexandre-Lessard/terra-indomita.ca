@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { CalendarCell } from "./calendar-cell";
 import type { EventsByDay } from "@/lib/types";
 import { formatDateKey, getDayStatus } from "@/lib/date-utils";
@@ -32,38 +31,43 @@ export function Calendar({
   }).format(monthCursor);
 
   return (
-    <div className="mx-auto max-w-md rounded-xl border bg-white/80 p-4 shadow-sm backdrop-blur-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
+    <div className="rounded-[14px] border border-[rgba(20,32,18,0.18)] bg-[rgba(252,249,243,0.72)] p-8 shadow-[0_18px_36px_-20px_rgba(20,32,18,0.4)]">
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <button
           onClick={() => onChangeMonth(-1)}
           aria-label="Mois précédent"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(20,32,18,0.12)] text-[1.4rem] text-[#0e2514] transition-all duration-200 hover:bg-brand-accent hover:text-white hover:shadow-[0_4px_12px_-2px_rgba(212,164,85,0.4)]"
         >
           ‹
-        </Button>
-        <h2 className="text-lg font-semibold capitalize" aria-live="polite">
+        </button>
+        <h2
+          className="text-[clamp(1.3rem,2vw,1.6rem)] font-semibold capitalize"
+          aria-live="polite"
+        >
           {monthLabel}
         </h2>
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => onChangeMonth(1)}
           aria-label="Mois suivant"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(20,32,18,0.12)] text-[1.4rem] text-[#0e2514] transition-all duration-200 hover:bg-brand-accent hover:text-white hover:shadow-[0_4px_12px_-2px_rgba(212,164,85,0.4)]"
         >
           ›
-        </Button>
+        </button>
       </div>
 
-      <div className="mb-2 grid grid-cols-7 text-center text-xs font-medium text-muted-foreground">
+      <div className="mb-1 grid grid-cols-7 gap-[0.35rem] text-center text-[0.8rem] font-bold uppercase tracking-wider text-[rgba(14,37,20,0.7)]">
         {WEEKDAYS.map((d) => (
           <span key={d}>{d}</span>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1" role="grid" aria-label={monthLabel}>
+      <div
+        className="grid grid-cols-[repeat(7,minmax(0,1fr))] gap-[0.35rem]"
+        role="grid"
+        aria-label={monthLabel}
+      >
         {Array.from({ length: startOffset }, (_, i) => (
-          <div key={`filler-${i}`} role="gridcell" />
+          <div key={`filler-${i}`} className="invisible" role="gridcell" />
         ))}
 
         {Array.from({ length: daysInMonth }, (_, i) => {

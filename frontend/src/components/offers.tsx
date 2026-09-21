@@ -2,12 +2,6 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 interface Offer {
   title: string;
@@ -45,21 +39,27 @@ const offers: Offer[] = [
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
+  visible: { transition: { staggerChildren: 0.18 } },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 export function Offers() {
   return (
-    <section className="bg-white py-16" id="services">
+    <section className="bg-white py-24" id="services">
       <div className="mx-auto max-w-[1100px] px-4">
-        <p className="mb-8 text-center text-sm font-semibold uppercase tracking-widest text-brand-dark">
+        <motion.p
+          className="mb-12 text-center text-xl font-semibold uppercase tracking-[0.2em] text-[#1c3120]"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           Ce que nous offrons
-        </p>
+        </motion.p>
 
         <motion.div
           className="grid gap-8 md:grid-cols-3"
@@ -69,28 +69,32 @@ export function Offers() {
           viewport={{ once: true, amount: 0.2 }}
         >
           {offers.map((offer) => (
-            <motion.div key={offer.title} variants={fadeUp}>
-              <Card className="h-full overflow-hidden border-0 shadow-md">
-                <div className="relative aspect-[4/3]">
-                  <Image
-                    src={offer.image}
-                    alt={offer.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-xl">{offer.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <p>{offer.description}</p>
-                  {offer.extra && (
-                    <p className="text-sm text-muted-foreground">
-                      {offer.extra}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+            <motion.div
+              key={offer.title}
+              variants={fadeUp}
+              className="group h-full overflow-hidden rounded-2xl border border-[rgba(20,32,18,0.12)] bg-white shadow-[0_4px_24px_-8px_rgba(20,32,18,0.12)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_48px_-12px_rgba(20,32,18,0.25)]"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src={offer.image}
+                  alt={offer.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="mb-3 text-xl font-semibold text-[#0e2514]">
+                  {offer.title}
+                </h3>
+                <p className="text-[1.05rem] leading-relaxed text-[rgba(14,37,20,0.8)]">
+                  {offer.description}
+                </p>
+                {offer.extra && (
+                  <p className="mt-3 text-sm text-[rgba(14,37,20,0.5)]">
+                    {offer.extra}
+                  </p>
+                )}
+              </div>
             </motion.div>
           ))}
         </motion.div>

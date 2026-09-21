@@ -1,21 +1,36 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export function Founder() {
   return (
-    <section className="bg-brand-dark py-16 text-brand-light" id="fondateur">
-      <div className="mx-auto grid max-w-[1100px] gap-8 px-4 md:grid-cols-2 md:items-center">
-        <div className="flex justify-center">
+    <section className="bg-brand-dark py-24 text-brand-light" id="fondateur">
+      <div className="mx-auto grid max-w-[1100px] grid-cols-[repeat(auto-fit,minmax(280px,1fr))] items-center gap-16 px-4">
+        <motion.div
+          className="flex justify-center"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           <Image
             src="/images/fondateur-alex.jpg"
             alt="Portrait d'Alex, fondateur de Terra Indomita"
             width={400}
             height={400}
-            className="rounded-lg object-cover"
+            className="w-[min(400px,100%)] rounded-2xl object-cover shadow-[0_12px_40px_-8px_rgba(0,0,0,0.4)]"
           />
-        </div>
+        </motion.div>
 
-        <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-widest text-brand-accent">
+        <motion.div
+          className="space-y-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-8 text-[1.05rem] leading-relaxed"
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+        >
+          <p className="text-xl font-semibold uppercase tracking-[0.2em] text-brand-accent">
             À propos du fondateur
           </p>
           <p>
@@ -40,7 +55,7 @@ export function Founder() {
             respect, l&apos;entraide et le plaisir font partie de ses valeurs
             profondes.
           </p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
