@@ -1,0 +1,53 @@
+name: CD Production
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to production
+    needs: ci
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://terra-indomita.ca
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_PROD }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        env:
+          # Public site key; the matching secret lives on the Worker.
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: "0x4AAAAAAE_EpXyn23AEwaqF"
+        run: npm run build
+
+      # Migrations first: new code may need the new schema, old code tolerates it.
+      - name: Apply D1 migrations
+        working-directory: worker
+        run: npx wrangler d1 migrations apply DB --env production --remote
+
+      - name: Deploy Worker
+        working-directory: worker
+        run: npx wrangler deploy --env production
