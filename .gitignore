@@ -1,19 +1,14 @@
 # Dependencies
 node_modules/
 
-# Frontend
-frontend/.next/
-frontend/out/
+# Worker local state and secrets
+.wrangler/
+.dev.vars*
 
-# CMS
-cms/*.db
-cms/uploads/
-cms/extensions/
-cms/.env
-
-# Env
-.env.local
-.deploy.env
+# Local environment
+.env
+.env.*
+!.env.example
 
 # Notes
 notes/
