@@ -1,102 +1,72 @@
-# Terra Indomita — Events Landing (Portfolio)
+# Terra Indomita
 
-A fast, resilient marketing site with a calendar-based events experience. The static frontend deploys on Cloudflare Pages; content is managed in a self-hosted Directus CMS/API that’s safely exposed through Cloudflare Tunnel and protected with Zero Trust for admin access.
+Website of Terra Indomita, an outdoor school in Franklin, Québec: a one-page
+site with an events calendar, online registration and a small admin for the
+organizer. Everything runs on a single Cloudflare Worker.
 
-## Live / Demo
-- Production (active): https://terra-indomita.ca
-- Staging (active): https://test.terra-indomita.ca
-- Public API (read): https://api.terra-indomita.ca/items/events
-- Admin (protected): https://admin.terra-indomita.ca
+- Production: https://terra-indomita.ca
+- Staging: behind Cloudflare Access (see [workflow](docs/workflow.md))
 
-## Highlights (Why this is a good portfolio project)
-- Full stack ownership: product, frontend, backend, DevOps, security.
-- Resilient UX: calendar shows friendly fallbacks if the API is slow or unavailable.
-- Secure by design: no public origin ports; admin behind Cloudflare Access.
-- Performance-aware: static edge delivery + short TTL cache on event data.
-- Clean repo and docs: initiation → infra → CMS → API → frontend → migration.
+## Highlights
 
-## Features
-- Calendar view with month navigation; today highlighted by default.
-- Colored indicators for days with events (upcoming/current/past).
-- Click a day to open an accessible overlay with event details (title, time range, location, description, featured image).
-- Graceful fallback: hides the calendar and shows a clear message on API failure.
-- Skeleton loading: shimmering placeholder grid while fetching events.
+- **One Worker, no server.** The Worker serves the static Next.js export and a
+  Hono API; D1 stores events and registrations, R2 stores images.
+- **Admin without passwords.** `/admin` sits behind Cloudflare Access (email
+  one-time code) and the Worker re-verifies the Access JWT on every call.
+- **Registrations that respect privacy.** Turnstile, a honeypot and per-IP rate
+  limiting stop bots; consent is recorded; a nightly cron deletes registrations
+  six months after their event, as the privacy policy (Quebec's Law 25) states.
+- **Dev → staging → production.** Invented seed data locally, a separate staging
+  Worker and database, and GitHub Actions that test, migrate and deploy.
+- **Tested in the Workers runtime.** API tests run against real D1, R2 and
+  rate-limiter bindings with `@cloudflare/vitest-pool-workers`.
 
-## Architecture
-- Frontend: static `index.html` + CSS, deployed via Cloudflare Pages.
-- CMS/API: Directus on my server; exposed at `api.terra-indomita.ca` via Cloudflare Tunnel.
-- Admin: `admin.terra-indomita.ca` protected by Cloudflare Zero Trust (Access).
-- DNS/Edge: Cloudflare DNS + Pages + cache rules + custom outage page.
+## Stack
 
-## Tech Stack
-- Frontend: HTML/CSS/vanilla JS (no framework, minimal dependencies).
-- CMS/API: Directus 11 (REST), SQLite (dev), pluggable to Postgres.
-- Cloudflare: Pages, DNS, Tunnel, Access (Zero Trust), Cache Rules.
+| Layer | Tools |
+|---|---|
+| Site | Next.js 16 (static export), React 19, TypeScript 6, Tailwind CSS 4, shadcn/ui, framer-motion |
+| API | Cloudflare Workers, Hono, zod, jose |
+| Data | Cloudflare D1 (SQLite), R2 |
+| Security | Cloudflare Access, Turnstile, Workers rate limiting |
+| Email | Cloudflare Email Routing (`send_email` binding) |
+| Quality | Vitest, Testing Library, ESLint, GitHub Actions |
 
-## Repository Layout
-index.html
-assets/
-css/styles.css
-images/
-cms/ # Directus app (ignored: node_modules, db, uploads, .env)
-docs/
-PLAN.md # Work plan / milestones
-frontend/calendar-requirements.md
-cms/README.md # Runbook: model, roles, tasks
-api/README.md # Public endpoints & examples
-infra/cloudflare-behavior.md
-initiation/*.md # Branding, domains, schema
+## Repository layout
 
-## Content Model & API
-- Event fields: `title`, `start`, `end?`, `location?`, `description?`, `featured_image?`.
-- Global settings (singleton): `showCurrentEvents` (bool).
-- Public read endpoints (Directus REST):
-  - `GET /items/events?sort=start&fields=title,start,end,location,description,featured_image`
-  - `GET /items/global_settings`
-- Health: `GET /server/health`
+```
+frontend/   Next.js site and admin (static export to frontend/out)
+worker/     Worker: API, migrations, seed, tests, wrangler.jsonc
+ops/        One-off scripts (legacy CMS import)
+docs/       Architecture, workflow, API, cutover runbook, admin guide
+.github/    CI and deploy workflows
+```
 
-## Frontend Notes
-- Fetches both endpoints and groups events client-side.
-- Preserves line breaks in descriptions.
-- Featured images are shown at the top of the modal (no cropping; `object-fit: contain`).
-- Calendar grid uses a large background indicator per day, with status colors.
+## Getting started
 
-## Cloudflare Behavior
-- Pages: static site served from edge; custom domains for staging/prod.
-- Cache rules: 60–120s TTL for `/items/events*` and `/items/global_settings*`; bypass admin and non-GET.
-- Outage: custom error page for 520–527; frontend includes a soft-fail message for API hiccups.
-- See `docs/infra/cloudflare-behavior.md`.
+Requires Node 24 LTS (`.tool-versions`).
 
-## Local Development
-python3 -m http.server 3000
+```bash
+npm ci
+npm run build
+npm run db:migrate:local -w worker
+npm run db:seed:local -w worker
+npm run dev            # http://localhost:8787, admin at /admin/
+```
 
-open http://localhost:3000
+Checks: `npm run lint && npm run typecheck && npm test`.
 
-Directus lives in `cms/` (not required to preview the static site). See `docs/cms/README.md` for bootstrapping and `cms/.env.example`.
+## Documentation
 
-## Migration Plan (Summary)
-1) Serve staging on `test.terra-indomita.ca`.  
-2) Attach production domains to Pages and flip DNS to Cloudflare (short TTL).  
-3) Verify, then merge `project-rebuild` → `main` and set Pages to build from `main`.  
-4) Disable GitHub Pages. Rollback: revert DNS records (low TTL).
-
-## Roadmap
-- iCal/ICS export; Markdown rendering in descriptions.
-- Prefetch adjacent months; filter by tags/locations.
-- Admin workflows (service tokens) for future automations.
+- [Architecture](docs/architecture.md): components, environments, dates, cost
+- [Workflow](docs/workflow.md): local development, branches, CI/CD, dependency policy
+- [API](docs/api.md): public and admin endpoints
+- [Production cutover](docs/production-cutover.md): one-time move from the legacy setup
+- [Guide de l'administration](docs/guide-admin.md): for the organizer, in French
+- [Branding](docs/branding.md): colours, typography, image rights
 
 ## License
 
-- Code: MIT (see LICENSE)
-- Documentation: CC BY 4.0 (see docs/LICENSE-docs)
-- Fonts: Nunito under OFL 1.1 (see assets/fonts/nunito/OFL.txt if self-hosted)
-- Images/Branding: © Terra Indomita, all rights reserved; not for redistribution (see assets/LICENSE-ASSETS)
-
-## License
-
-- Code: MIT (see LICENSE)
-- Documentation: CC BY 4.0 (see docs/LICENSE-docs)
-- Fonts: Nunito under OFL 1.1 (see assets/fonts/nunito/OFL.txt if self-hosted)
-- Images/Branding: © Terra Indomita, all rights reserved; not for redistribution (see assets/LICENSE-ASSETS)
-
-If you need a different license for a specific part of this repo, open an issue first.
+- Code: MIT (see [LICENSE](LICENSE))
+- Documentation: CC BY 4.0 (see [docs/LICENSE-docs](docs/LICENSE-docs))
+- Images and branding: © Terra Indomita, all rights reserved (see [docs/branding.md](docs/branding.md))
