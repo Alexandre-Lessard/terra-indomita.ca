@@ -125,7 +125,7 @@ export function RegistrationsList() {
       )}
 
       <p className="text-xs text-[#6b6b6b]">
-        Les inscriptions sont effacées automatiquement six mois après la fin de l&apos;événement. Une
+        Les inscriptions sont effacées automatiquement douze mois après la fin de l&apos;événement. Une
         personne qui demande le retrait de ses renseignements peut être supprimée ici.
       </p>
     </div>

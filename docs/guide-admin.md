@@ -53,10 +53,12 @@ Dans l'administration, le bouton **Inscriptions (n)** d'un événement donne :
 La politique de confidentialité du site
 (https://terra-indomita.ca/confidentialite/) prend deux engagements :
 
-- les inscriptions sont effacées automatiquement **six mois après la fin de
+- les inscriptions sont effacées automatiquement **douze mois après la fin de
   l'événement** — le site s'en charge ;
 - les **courriels d'avis d'inscription** sont supprimés dans le même délai —
-  cela, c'est à faire à la main dans la boîte courriel.
+  cela, c'est à faire à la main dans la boîte courriel. Le plus simple : tous
+  les six mois, chercher les avis de plus de six mois et les supprimer ; on
+  reste ainsi toujours bien en deçà des douze mois promis.
 
 Une demande d'accès, de correction ou de suppression reçue à
 info@terra-indomita.ca doit recevoir une réponse dans les 30 jours.

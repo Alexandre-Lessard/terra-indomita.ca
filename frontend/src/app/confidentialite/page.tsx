@@ -78,7 +78,7 @@ export default function PrivacyPage() {
           <section className="space-y-3">
             <h2 className="text-xl font-semibold">Conservation</h2>
             <p>
-              Les inscriptions sont effacées automatiquement six mois après la fin de
+              Les inscriptions sont effacées automatiquement douze mois après la fin de
               l&apos;événement. Chaque inscription génère aussi un avis envoyé à la boîte courriel de
               Terra Indomita ; ces avis sont supprimés dans le même délai.
             </p>

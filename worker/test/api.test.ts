@@ -181,10 +181,10 @@ describe("admin access", () => {
 });
 
 describe("retention", () => {
-  it("purges registrations six months after their event, not before", async () => {
+  it("purges registrations twelve months after their event, not before", async () => {
     const now = "2026-09-21T12:00:00";
-    const old = await insertEvent("2026-02-01T09:00", "2026-02-01T17:00", "Ancien");
-    const recent = await insertEvent("2026-08-01T09:00", "2026-08-01T17:00", "Récent");
+    const old = await insertEvent("2025-06-01T09:00", "2025-06-01T17:00", "Ancien");
+    const recent = await insertEvent("2026-02-01T09:00", "2026-02-01T17:00", "Récent");
     for (const eventId of [old, recent]) {
       await env.DB.prepare(
         "INSERT INTO registrations (id, event_id, name, email, consent_at, created_at) VALUES (?, ?, 'X', 'x@example.com', 'c', 'c')",
