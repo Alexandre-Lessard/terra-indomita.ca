@@ -71,12 +71,16 @@
       "triggers": { "crons": ["17 7 * * *"] }
     },
 
-    // Not attached to terra-indomita.ca until the cutover described in
-    // docs/infra/mise-en-production.md.
+    // Serves terra-indomita.ca; the cutover from Pages is described in
+    // docs/production-cutover.md. The Worker redirects www to the apex.
     "production": {
       "name": "terra-indomita",
       "workers_dev": false,
       "preview_urls": false,
+      "routes": [
+        { "pattern": "terra-indomita.ca", "custom_domain": true },
+        { "pattern": "www.terra-indomita.ca", "custom_domain": true }
+      ],
       "vars": {
         "SITE_ENV": "production",
         "AUTH_MODE": "access",
