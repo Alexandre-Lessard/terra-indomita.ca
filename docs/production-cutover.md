@@ -4,6 +4,24 @@ One-time runbook to move `terra-indomita.ca` from the legacy setup (static
 page on Cloudflare Pages + Directus on a home server) to the Worker. Once done,
 production releases follow [the normal workflow](workflow.md).
 
+**Executed on 2026-10-29.** Sections 1 to 3 are done; what differed from the
+plan below:
+
+- Removing a custom domain from the Pages project deletes its CNAME record
+  itself: no DNS record had to be deleted by hand.
+- The www redirect did not apply at first: production served assets before the
+  Worker (`run_worker_first` limited to `/api/*` and `/admin*`), so
+  `www.terra-indomita.ca/` was answered from the static export. Fixed the same
+  day by running the Worker first in production, as staging already did.
+- The test registration was made on a temporary event inserted in D1 and
+  deleted afterwards with its registration; the notice went to the organizer's
+  inbox, to be confirmed by him.
+- Resolvers that had asked for the apex during the switch cached the negative
+  answer for the zone's 1800 s negative TTL: the site looked down for up to
+  30 minutes on those machines while the new records were already live.
+
+Still to do: section 4, and section 5 from 2026-11-05.
+
 State prepared before cutover (2026-09-21):
 
 - Worker `terra-indomita` exists but serves nothing publicly (`workers_dev` off, no route).
