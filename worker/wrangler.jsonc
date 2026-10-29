@@ -81,6 +81,15 @@
         { "pattern": "terra-indomita.ca", "custom_domain": true },
         { "pattern": "www.terra-indomita.ca", "custom_domain": true }
       ],
+      // The Worker must see every request, or the www redirect never runs:
+      // with the default asset-first serving, www.terra-indomita.ca/ is
+      // answered straight from the static export.
+      "assets": {
+        "directory": "../frontend/out",
+        "binding": "ASSETS",
+        "not_found_handling": "404-page",
+        "run_worker_first": true
+      },
       "vars": {
         "SITE_ENV": "production",
         "AUTH_MODE": "access",
