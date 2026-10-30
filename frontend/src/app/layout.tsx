@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         url: "/images/og-terra-indomita.jpg",
         width: 1200,
         height: 630,
-        alt: "Terra Indomita, école de plein air à Franklin, en Montérégie",
+        alt: "Terra Indomita, école de plein air en Montérégie",
       },
     ],
   },

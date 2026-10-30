@@ -21,7 +21,7 @@ const EMPTY: FormState = {
   title: "",
   start: "",
   end: "",
-  location: "Franklin, QC",
+  location: "",
   description: "",
   imageKey: null,
   imageUrl: null,

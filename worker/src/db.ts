@@ -146,6 +146,23 @@ export async function setShowCurrentEvents(db: D1Database, value: boolean): Prom
     .run();
 }
 
+export const DEFAULT_QR_TARGET = "/decouvrir/";
+
+export async function getQrTarget(db: D1Database): Promise<string> {
+  const row = await db.prepare("SELECT qr_target FROM settings WHERE id = 1").first<{ qr_target: string | null }>();
+  return row?.qr_target || DEFAULT_QR_TARGET;
+}
+
+export async function setQrTarget(db: D1Database, value: string): Promise<void> {
+  await db
+    .prepare(
+      `INSERT INTO settings (id, qr_target) VALUES (1, ?)
+       ON CONFLICT (id) DO UPDATE SET qr_target = excluded.qr_target`,
+    )
+    .bind(value)
+    .run();
+}
+
 export async function createRegistration(
   db: D1Database,
   input: Omit<RegistrationRecord, "id" | "createdAt">,

@@ -49,6 +49,15 @@ export const eventSchema = z
     path: ["end"],
   });
 
-export const settingsSchema = z.object({
-  showCurrentEvents: z.boolean(),
-});
+// Where `/qr` sends visitors: a path on this site, or an absolute https URL.
+export const qrTargetSchema = singleLine(500).refine(
+  (v) => /^\/[^\s]*$/.test(v) || /^https:\/\/[^\s]+$/.test(v),
+  "La cible doit commencer par / ou par https://",
+);
+
+export const settingsSchema = z
+  .object({
+    showCurrentEvents: z.boolean().optional(),
+    qrTarget: qrTargetSchema.optional(),
+  })
+  .refine((s) => s.showCurrentEvents !== undefined || s.qrTarget !== undefined, "Aucun réglage fourni");

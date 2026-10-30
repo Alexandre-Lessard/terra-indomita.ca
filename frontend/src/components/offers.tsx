@@ -24,7 +24,7 @@ const offers: Offer[] = [
     image: "/images/offre-camp-immersif.jpg",
     alt: "Campement en pleine forêt",
     description:
-      "Mettez vos connaissances en pratique pendant quelques jours en pleine nature : abris naturels, feu, eau potable, bivouac, cuisine en forêt, cueillette, pêche et pose de collets. Comme nos arrière-grands-parents, en bonne compagnie !",
+      "Mettez vos connaissances en pratique pendant quelques jours en pleine nature : abris naturels, feu, eau potable, bivouac, cuisine en forêt, cueillette, lecture des traces. Comme nos arrière-grands-parents, en bonne compagnie !",
     extra:
       "Nécessite une bonne forme physique pour les déplacements en milieu sauvage.",
   },

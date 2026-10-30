@@ -12,6 +12,11 @@ export interface GlobalSettings {
   showCurrentEvents: boolean;
 }
 
+/** Settings as the admin sees them; the QR code of the printed material points to `/qr`, which redirects to `qrTarget`. */
+export interface AdminSettings extends GlobalSettings {
+  qrTarget: string;
+}
+
 export type EventsByDay = Map<string, Event[]>;
 
 export interface RegistrationPayload {

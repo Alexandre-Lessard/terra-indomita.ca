@@ -4,9 +4,11 @@ import {
   deleteEvent,
   deleteRegistration,
   getEvent,
+  getQrTarget,
   getShowCurrentEvents,
   listEventsWithCounts,
   listRegistrations,
+  setQrTarget,
   setShowCurrentEvents,
   updateEvent,
 } from "../db";
@@ -91,15 +93,20 @@ adminRoutes.post("/images", async (c) => {
   return c.json({ data: { key, url: imageUrl(key) } }, 201);
 });
 
+async function readSettings(db: D1Database) {
+  return { showCurrentEvents: await getShowCurrentEvents(db), qrTarget: await getQrTarget(db) };
+}
+
 adminRoutes.get("/settings", async (c) => {
-  return c.json({ data: { showCurrentEvents: await getShowCurrentEvents(c.env.DB) } });
+  return c.json({ data: await readSettings(c.env.DB) });
 });
 
 adminRoutes.put("/settings", async (c) => {
   const parsed = settingsSchema.safeParse(await c.req.json().catch(() => null));
   if (!parsed.success) return c.json({ error: "Réglage invalide." }, 400);
-  await setShowCurrentEvents(c.env.DB, parsed.data.showCurrentEvents);
-  return c.json({ data: parsed.data });
+  if (parsed.data.showCurrentEvents !== undefined) await setShowCurrentEvents(c.env.DB, parsed.data.showCurrentEvents);
+  if (parsed.data.qrTarget !== undefined) await setQrTarget(c.env.DB, parsed.data.qrTarget);
+  return c.json({ data: await readSettings(c.env.DB) });
 });
 
 adminRoutes.get("/events/:id/registrations", async (c) => {

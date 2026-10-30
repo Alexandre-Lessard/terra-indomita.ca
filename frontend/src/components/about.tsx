@@ -35,11 +35,10 @@ export function About() {
           </p>
           <div className="space-y-4 text-[1.05rem] leading-relaxed">
             <p>
-              <strong>Terra Indomita</strong> est une école de plein air établie à Franklin, en
-              Montérégie. Nous aidons les gens de tout âge à devenir plus autonomes dehors : purifier
+              <strong>Terra Indomita</strong> est une école de plein air établie en Montérégie, et
+              bientôt ailleurs au Québec. Nous aidons les gens de tout âge à devenir plus autonomes dehors : purifier
               l&apos;eau, rester au chaud grâce à un abri et un feu, reconnaître les arbres et les
-              plantes, comprendre le comportement des animaux et des oiseaux, pêcher et poser des
-              collets.
+              plantes, comprendre le comportement des animaux et des oiseaux.
             </p>
             <p>
               Notre approche n&apos;est pas la survie une fois perdu. Nous vous apprenons plutôt à ne

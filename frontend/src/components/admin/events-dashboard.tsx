@@ -17,6 +17,9 @@ function nowLocal() {
 export function EventsDashboard() {
   const [events, setEvents] = useState<AdminEvent[] | null>(null);
   const [showCurrent, setShowCurrent] = useState<boolean | null>(null);
+  const [qrTarget, setQrTarget] = useState("");
+  const [qrSaved, setQrSaved] = useState("");
+  const [qrStatus, setQrStatus] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -28,6 +31,8 @@ export function EventsDashboard() {
         if (cancelled) return;
         setEvents(list);
         setShowCurrent(settings.showCurrentEvents);
+        setQrTarget(settings.qrTarget);
+        setQrSaved(settings.qrTarget);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       }
@@ -42,10 +47,22 @@ export function EventsDashboard() {
   async function toggleCurrent(value: boolean) {
     setShowCurrent(value);
     try {
-      await adminApi.updateSettings(value);
+      await adminApi.updateSettings({ showCurrentEvents: value });
     } catch (err) {
       setShowCurrent(!value);
       setError(err instanceof Error ? err.message : "Réglage non enregistré.");
+    }
+  }
+
+  async function saveQrTarget() {
+    setQrStatus("");
+    try {
+      const saved = await adminApi.updateSettings({ qrTarget: qrTarget.trim() });
+      setQrTarget(saved.qrTarget);
+      setQrSaved(saved.qrTarget);
+      setQrStatus("Cible enregistrée.");
+    } catch (err) {
+      setQrStatus(err instanceof Error ? err.message : "Cible non enregistrée.");
     }
   }
 
@@ -83,6 +100,30 @@ export function EventsDashboard() {
             Décoché : il passe directement de « à venir » à « passé ».
           </span>
         </label>
+      )}
+
+      {showCurrent !== null && (
+        <div className="space-y-2 rounded-xl border border-[#e5e0d8] bg-white p-4 text-sm">
+          <label className="block" htmlFor="qr-target">
+            <strong>Cible du code QR</strong>
+            <br />
+            Le code QR imprimé sur le dépliant mène à terra-indomita.ca/qr, qui renvoie ici. Une page du
+            site (« /decouvrir/ », « /#evenements ») ou une adresse complète (https://…).
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <input
+              id="qr-target"
+              type="text"
+              className="min-w-[16rem] flex-1 rounded-md border border-[#e5e0d8] px-3 py-2"
+              value={qrTarget}
+              onChange={(e) => setQrTarget(e.target.value)}
+            />
+            <Button type="button" onClick={saveQrTarget} disabled={qrTarget.trim() === qrSaved}>
+              Enregistrer
+            </Button>
+          </div>
+          {qrStatus && <p className="text-[#6b6b6b]">{qrStatus}</p>}
+        </div>
       )}
 
       {events === null && !error && <p className="text-sm text-[#6b6b6b]">Chargement…</p>}

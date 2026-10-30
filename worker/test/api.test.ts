@@ -199,6 +199,54 @@ describe("retention", () => {
   });
 });
 
+describe("QR redirect", () => {
+  it("sends /qr to the discover page by default", async () => {
+    const response = await call("/qr");
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe("https://example.test/decouvrir/");
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+  });
+
+  it("follows the target saved in the settings, relative or absolute", async () => {
+    let saved = await call("/api/admin/settings", {
+      method: "PUT",
+      body: JSON.stringify({ qrTarget: "/#evenements" }),
+      headers: { "Content-Type": "application/json" },
+    });
+    expect(saved.status).toBe(200);
+    expect(((await saved.json()) as { data: { qrTarget: string; showCurrentEvents: boolean } }).data).toEqual({
+      qrTarget: "/#evenements",
+      showCurrentEvents: true,
+    });
+    expect((await call("/qr/flyer")).headers.get("Location")).toBe("https://example.test/#evenements");
+
+    saved = await call("/api/admin/settings", {
+      method: "PUT",
+      body: JSON.stringify({ qrTarget: "https://www.facebook.com/terraindomitaqc" }),
+      headers: { "Content-Type": "application/json" },
+    });
+    expect(saved.status).toBe(200);
+    expect((await call("/qr")).headers.get("Location")).toBe("https://www.facebook.com/terraindomitaqc");
+  });
+
+  it("rejects a target that is neither a path nor an https URL", async () => {
+    await call("/api/admin/settings", {
+      method: "PUT",
+      body: JSON.stringify({ qrTarget: "/decouvrir/" }),
+      headers: { "Content-Type": "application/json" },
+    });
+    for (const qrTarget of ["javascript:alert(1)", "http://example.com", "evenements", ""]) {
+      const response = await call("/api/admin/settings", {
+        method: "PUT",
+        body: JSON.stringify({ qrTarget }),
+        headers: { "Content-Type": "application/json" },
+      });
+      expect(response.status).toBe(400);
+    }
+    expect((await call("/qr")).headers.get("Location")).toBe("https://example.test/decouvrir/");
+  });
+});
+
 describe("canonical host", () => {
   it("redirects www to the apex, keeping the path", async () => {
     const request = new Request("https://www.terra-indomita.ca/confidentialite/?a=1") as Request<

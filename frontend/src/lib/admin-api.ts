@@ -1,3 +1,4 @@
+import type { AdminSettings } from "./types";
 // Client for the Worker's /api/admin routes. Cloudflare Access authenticates
 // the browser session; the Worker re-checks the Access token on every call.
 
@@ -74,9 +75,8 @@ export const adminApi = {
     form.append("file", file);
     return request<{ key: string; url: string }>("/images", { method: "POST", body: form });
   },
-  getSettings: () => request<{ showCurrentEvents: boolean }>("/settings"),
-  updateSettings: (showCurrentEvents: boolean) =>
-    request<{ showCurrentEvents: boolean }>("/settings", json("PUT", { showCurrentEvents })),
+  getSettings: () => request<AdminSettings>("/settings"),
+  updateSettings: (settings: Partial<AdminSettings>) => request<AdminSettings>("/settings", json("PUT", settings)),
   listRegistrations: (eventId: string) =>
     request<AdminRegistration[]>(`/events/${encodeURIComponent(eventId)}/registrations`),
   registrationsCsvUrl: (eventId: string) => `/api/admin/events/${encodeURIComponent(eventId)}/registrations.csv`,

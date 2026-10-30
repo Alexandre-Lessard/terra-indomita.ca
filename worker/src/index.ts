@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { getQrTarget } from "./db";
 import { verifyAccess } from "./lib/access";
 import { purgeExpiredRegistrations } from "./lib/retention";
 import { adminRoutes } from "./routes/admin";
@@ -23,6 +24,12 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   if (url.hostname.startsWith("www.")) {
     url.hostname = url.hostname.slice(4);
     return Response.redirect(url.toString(), 301);
+  }
+
+  // The printed QR code points here; where it lands is a setting, so a flyer never goes stale.
+  if (pathname === "/qr" || pathname.startsWith("/qr/")) {
+    const target = new URL(await getQrTarget(env.DB), url.origin);
+    return new Response(null, { status: 302, headers: { Location: target.toString(), "Cache-Control": "no-store" } });
   }
 
   if (pathname.startsWith("/api/")) return api.fetch(request, env, ctx);

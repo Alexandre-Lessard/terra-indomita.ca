@@ -48,6 +48,22 @@ Dans l'administration, le bouton **Inscriptions (n)** d'un événement donne :
 - **Supprimer** une inscription, par exemple quand une personne demande le
   retrait de ses renseignements.
 
+## Le code QR du dépliant
+
+Le code QR imprimé mène à `terra-indomita.ca/qr`, qui renvoie vers la page choisie
+dans l'admin (réglage « Cible du code QR », sous la liste des événements). Par
+défaut : `/decouvrir/`, la page faite pour qui arrive du dépliant (prochaines
+dates, inscription, réseaux). On peut la changer pour une page du site
+(`/#evenements`) ou une adresse complète (`https://…`) sans rien réimprimer.
+
+## Les avis d'inscription et les spams
+
+Les avis partent de `inscriptions@terra-indomita.ca`. Si l'un d'eux tombe dans les
+courriers indésirables d'Outlook, le marquer « courrier légitime » et ajouter
+l'expéditeur aux expéditeurs approuvés : les suivants arrivent dans la boîte.
+Le domaine porte SPF, DKIM et DMARC ; c'est la réputation d'un domaine neuf qui
+fait le reste, avec le temps.
+
 ## Protection des renseignements personnels
 
 La politique de confidentialité du site
